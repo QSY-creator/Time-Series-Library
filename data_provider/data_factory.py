@@ -5,6 +5,9 @@ from torch.utils.data import DataLoader
 
 data_dict = {
     'ETTh1': Dataset_ETT_hour,
+    'ETTh1_noise_drift': Dataset_ETT_hour,
+    'ETTh1_noise_dropout': Dataset_ETT_hour,
+    'ETTh1_noise_gaussian': Dataset_ETT_hour,
     'ETTh2': Dataset_ETT_hour,
     'ETTm1': Dataset_ETT_minute,
     'ETTm2': Dataset_ETT_minute,
