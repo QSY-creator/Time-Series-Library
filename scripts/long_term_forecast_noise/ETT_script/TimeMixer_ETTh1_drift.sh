@@ -12,7 +12,7 @@ d_ff=32
 train_epochs=10
 patience=10
 batch_size=16
-data_name =ETTh1_noise_drift
+data_name=ETTh1_noise_drift
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
