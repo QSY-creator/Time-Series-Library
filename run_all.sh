@@ -4,6 +4,7 @@
 # 你可以手动列出，或者用 *.py, *.sh 自动获取
 SCRIPTS=(
         "./scripts/long_term_forecast/ETT_script/DLinear_ETTh1_test.sh"
+        "./scripts/long_term_forecast/ETT_script/RobustTimeMixer_ETTh1.sh"
         "./scripts/long_term_forecast/ETT_script/DLinear_ETTh1_wrong.sh"
         "./scripts/long_term_forecast/ETT_script/Autoformer_ETTh1111.sh"
 )
