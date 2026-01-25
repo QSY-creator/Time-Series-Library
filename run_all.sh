@@ -3,9 +3,9 @@
 # 1. 定义你要运行的脚本列表
 # 你可以手动列出，或者用 *.py, *.sh 自动获取
 SCRIPTS=(
-        "./scripts/long_term_forecast/ETT_script/DLinear_ETTh1_test.sh",
-        "./scripts/long_term_forecast/ETT_script/DLinear_ETTh1_wrong.sh",
-        "./scripts/long_term_forecast/ETT_script/Autoformer_ETTh1111.sh",
+        "./scripts/long_term_forecast/ETT_script/DLinear_ETTh1_test.sh"
+        "./scripts/long_term_forecast/ETT_script/DLinear_ETTh1_wrong.sh"
+        "./scripts/long_term_forecast/ETT_script/Autoformer_ETTh1111.sh"
 )
 
 # 或者自动获取当前目录下所有 .py 文件：
