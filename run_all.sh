@@ -3,10 +3,56 @@
 # 1. 定义你要运行的脚本列表
 # 你可以手动列出，或者用 *.py, *.sh 自动获取
 SCRIPTS=(
-        "./scripts/long_term_forecast/ETT_script/DLinear_ETTh1_test.sh"
-        "./scripts/long_term_forecast/ETT_script/RobustTimeMixer_ETTh1.sh"
-        "./scripts/long_term_forecast/ETT_script/DLinear_ETTh1_wrong.sh"
-        "./scripts/long_term_forecast/ETT_script/Autoformer_ETTh1111.sh"
+        "./scripts/long_term_forecast/ETT_script/DLinear_ETTh1.sh"
+        "./scripts/long_term_forecast/ETT_script/Autoformer_ETTh1.sh"
+        "./scripts/long_term_forecast/ETT_script/Crossformer_ETTh1.sh"
+        "./scripts/long_term_forecast/ETT_script/TSMixer_ETTh1.sh"
+        "./scripts/long_term_forecast/ETT_script/iTransformer_ETTh1.sh"
+        "./scripts/long_term_forecast/ETT_script/TimeMixer_ETTh1.sh"
+        "./scripts/long_term_forecast/ETT_script/PatchTST_ETTh1.sh"
+        "./scripts/long_term_forecast/ETT_script/FEDformer_ETTh1.sh"
+
+        "./scripts/long_term_forecast/ETT_script/Crossformer_ETTh1_drift.sh"
+        "./scripts/long_term_forecast/ETT_script/Crossformer_ETTh1_dropout.sh"
+        "./scripts/long_term_forecast/ETT_script/Crossformer_ETTh1_gaussian.sh"
+
+        "./scripts/long_term_forecast/ETT_script/TSMixer_ETTh1_dropout.sh"
+        "./scripts/long_term_forecast/ETT_script/TSMixer_ETTh1_drift.sh"
+        "./scripts/long_term_forecast/ETT_script/TSMixer_ETTh1_gaussian.sh"
+
+        "./scripts/long_term_forecast/ETT_script/TimesNet_ETTh1_drift.sh"
+        "./scripts/long_term_forecast/ETT_script/TimesNet_ETTh1_dropout.sh"
+        "./scripts/long_term_forecast/ETT_script/TimesNet_ETTh1_gaussian.sh"
+        
+        "./scripts/long_term_forecast/ETT_script/Autoformer_ETTh1_gaussian.sh"
+        "./scripts/long_term_forecast/ETT_script/Autoformer_ETTh1_drift.sh"
+        "./scripts/long_term_forecast/ETT_script/Autoformer_ETTh1_dropout.sh"
+
+        
+        "./scripts/long_term_forecast/ETT_script/DLinear_ETTh1_dropout.sh"
+        "./scripts/long_term_forecast/ETT_script/DLinear_ETTh1_drift.sh"  
+        "./scripts/long_term_forecast/ETT_script/DLinear_ETTh1_gaussian.sh"
+
+        "./scripts/long_term_forecast/ETT_script/iTransformer_ETTh1_dropout.sh"
+        "./scripts/long_term_forecast/ETT_script/iTransformer_ETTh1_gaussian.sh"
+        "./scripts/long_term_forecast/ETT_script/iTransformer_ETTh1_drift.sh"
+
+        "./scripts/long_term_forecast/ETT_script/TimeMixer_ETTh1_gaussian.sh"
+        
+        "./scripts/long_term_forecast/ETT_script/PatchTST_ETTh1_drift.sh"
+        "./scripts/long_term_forecast/ETT_script/PatchTST_ETTh1_dropout.sh"
+        "./scripts/long_term_forecast/ETT_script/PatchTST_ETTh1_gaussian.sh"
+
+
+        "./scripts/long_term_forecast/ETT_script/FEDformer_ETTh1_dropout.sh"
+        "./scripts/long_term_forecast/ETT_script/FEDformer_ETTh1_drift.sh"
+        "./scripts/long_term_forecast/ETT_script/FEDformer_ETTh1_gaussian.sh"
+
+        "./scripts/long_term_forecast/ETT_script/RobustTimeMixer_ETTh1_dropout.sh"
+        "./scripts/long_term_forecast/ETT_script/RobustTimeMixer_ETTh1_gaussian.sh"
+
+        "./scripts/long_term_forecast/ETT_script/RTimeMixer2_ETTh1_dropout.sh"
+        "./scripts/long_term_forecast/ETT_script/RTimeMixer2_ETTh1_gaussian.sh"
 )
 
 # 或者自动获取当前目录下所有 .py 文件：
