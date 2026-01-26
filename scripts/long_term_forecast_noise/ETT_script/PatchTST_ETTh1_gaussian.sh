@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES=4
+export CUDA_VISIBLE_DEVICES=0,1,2,3
 
 model_name=PatchTST
 data_name=ETTh1_noise_gaussian

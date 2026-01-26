@@ -1,4 +1,4 @@
-export CUDA_VISIBLE_DEVICES=4
+export CUDA_VISIBLE_DEVICES=0,1,2,3
 
 python -u run.py \
   --task_name long_term_forecast \
