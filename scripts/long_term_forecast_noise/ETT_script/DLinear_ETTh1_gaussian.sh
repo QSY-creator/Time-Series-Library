@@ -1,6 +1,6 @@
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=4
 
-model_name=FEDformer
+model_name=DLinear
 data_name=ETTh1_noise_gaussian
 python -u run.py \
   --task_name long_term_forecast \
@@ -43,6 +43,7 @@ python -u run.py \
   --c_out 7 \
   --des 'Exp' \
   --itr 1
+  
 
 python -u run.py \
   --task_name long_term_forecast \

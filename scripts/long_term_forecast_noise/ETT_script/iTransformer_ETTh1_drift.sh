@@ -1,7 +1,7 @@
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=4
 
 model_name=iTransformer
-data_name=ETTh1_noise_gaussian
+data_name=ETTh1_noise_drift
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \

@@ -1,7 +1,7 @@
-export CUDA_VISIBLE_DEVICES=0
+export CUDA_VISIBLE_DEVICES=4
 
-model_name=FEDformer
-data_name=ETTh1_noise_drift
+model_name=iTransformer
+data_name=ETTh1
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
@@ -21,6 +21,8 @@ python -u run.py \
   --dec_in 7 \
   --c_out 7 \
   --des 'Exp' \
+  --d_model 128 \
+  --d_ff 128 \
   --itr 1
 
 python -u run.py \
@@ -42,6 +44,8 @@ python -u run.py \
   --dec_in 7 \
   --c_out 7 \
   --des 'Exp' \
+  --d_model 128 \
+  --d_ff 128 \
   --itr 1
 
 python -u run.py \
@@ -63,6 +67,8 @@ python -u run.py \
   --dec_in 7 \
   --c_out 7 \
   --des 'Exp' \
+  --d_model 128 \
+  --d_ff 128 \
   --itr 1
 
 python -u run.py \
@@ -84,4 +90,6 @@ python -u run.py \
   --dec_in 7 \
   --c_out 7 \
   --des 'Exp' \
+  --d_model 128 \
+  --d_ff 128 \
   --itr 1
