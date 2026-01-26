@@ -37,7 +37,7 @@ augmentation algorithms on `EthanolConcentration` dataset
 using `PatchTST` model.
 
 ```shell
-export CUDA_VISIBLE_DEVICES=0,1,2,3
+export CUDA_VISIBLE_DEVICES=0,1,2
 
 model_name=PatchTST
 

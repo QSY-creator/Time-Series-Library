@@ -3,7 +3,6 @@
 # 1. 定义你要运行的脚本列表
 # 你可以手动列出，或者用 *.py, *.sh 自动获取
 SCRIPTS=(
-  "./scripts/long_term_forecast/ETT_script/TSMixer_ETTh1.sh"
   "./scripts/long_term_forecast/ETT_script/iTransformer_ETTh1.sh"
   "./scripts/long_term_forecast/ETT_script/FEDformer_ETTh1.sh"
   "./scripts/long_term_forecast_noise/ETT_script/Autoformer_ETTh1_gaussian.sh"
