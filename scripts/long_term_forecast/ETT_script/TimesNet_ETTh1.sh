@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=0,1,2
 
 model_name=TimesNet
-data_name=ETTh1_noise_dropout
+data_name=ETTh1
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
