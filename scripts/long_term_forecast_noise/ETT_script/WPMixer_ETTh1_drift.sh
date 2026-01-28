@@ -6,7 +6,7 @@ export CUDA_VISIBLE_DEVICES=0,1,2
 model_name=WPMixer
 
 # Datasets and prediction lengths
-dataset=ETTh1
+dataset=ETTh1_noise_drift
 seq_lens=(512 512 512 512)
 pred_lens=(96 192 336 720)
 learning_rates=(0.000242438 0.000201437 0.000132929 0.000239762)
@@ -30,7 +30,7 @@ for i in "${!pred_lens[@]}"; do
 	python -u run.py \
 		--is_training 1 \
 		--root_path ./data/ETT/ \
-		--data_path ETTh1.csv \
+		--data_path ${dataset}.csv \
 		--model_id wpmixer \
 		--model $model_name \
 		--task_name long_term_forecast \

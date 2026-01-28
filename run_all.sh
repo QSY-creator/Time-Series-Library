@@ -3,12 +3,45 @@
 # 1. 定义你要运行的脚本列表
 # 你可以手动列出，或者用 *.py, *.sh 自动获取
 SCRIPTS=(
-  "./scripts/long_term_forecast_noise/ETT_script/DLinear_ETTh1_drift.sh"
-  "./scripts/long_term_forecast_noise/ETT_script/iTransformer_ETTh1_dropout.sh"
-  "./scripts/long_term_forecast_noise/ETT_script/iTransformer_ETTh1_gaussian.sh"
-  "./scripts/long_term_forecast_noise/ETT_script/RTimeMixer2_ETTh1_dropout.sh"
-  "./scripts/long_term_forecast_noise/ETT_script/RTimeMixer2_ETTh1_gaussian.sh"
+  "./scripts/long_term_forecast/ETT_script/Informer_ETTh1.sh"
+  "./scripts/long_term_forecast_noise/ETT_script/Informer_ETTh1_drift.sh"
+  "./scripts/long_term_forecast_noise/ETT_script/Informer_ETTh1_dropout.sh"
+  "./scripts/long_term_forecast_noise/ETT_script/Informer_ETTh1_gaussian.sh"
+
+  "./scripts/long_term_forecast/ETT_script/SegRNN_ETTh1.sh"
+  "./scripts/long_term_forecast_noise/ETT_script/SegRNN_ETTh1_drift.sh"
+  "./scripts/long_term_forecast_noise/ETT_script/SegRNN_ETTh1_dropout.sh"
+  "./scripts/long_term_forecast_noise/ETT_script/SegRNN_ETTh1_gaussian.sh"
+
+  "./scripts/long_term_forecast/ETT_script/WPMixer_ETTh1.sh"
+  "./scripts/long_term_forecast_noise/ETT_script/WPMixer_ETTh1_drift.sh"  
+  "./scripts/long_term_forecast_noise/ETT_script/WPMixer_ETTh1_dropout.sh"
+  "./scripts/long_term_forecast_noise/ETT_script/WPMixer_ETTh1_gaussian.sh"
+
+  "./scripts/long_term_forecast/ETT_script/TiDE_ETTh1.sh"
+  "./scripts/long_term_forecast_noise/ETT_script/TiDE_ETTh1_drift.sh"
+  "./scripts/long_term_forecast_noise/ETT_script/TiDE_ETTh1_dropout.sh"
+  "./scripts/long_term_forecast_noise/ETT_script/TiDE_ETTh1_gaussian.sh"
+  
+  "./scripts/long_term_forecast/ETT_script/Pyraformer_ETTh1.sh"
+    "./scripts/long_term_forecast_noise/ETT_script/Pyraformer_ETTh1_drift.sh"
+    "./scripts/long_term_forecast_noise/ETT_script/Pyraformer_ETTh1_dropout.sh"
+    "./scripts/long_term_forecast_noise/ETT_script/Pyraformer_ETTh1_gaussian.sh"
+    
+    "./scripts/long_term_forecast/ETT_script/LightTS_ETTh1.sh"
+    "./scripts/long_term_forecast_noise/ETT_script/LightTS_ETTh1_drift.sh"
+    "./scripts/long_term_forecast_noise/ETT_script/LightTS_ETTh1_dropout.sh"
+    "./scripts/long_term_forecast_noise/ETT_script/LightTS_ETTh1_gaussian.sh"
+
+    "./scripts/long_term_forecast/ETT_script/MICN_ETTh1.sh"
+    "./scripts/long_term_forecast_noise/ETT_script/MICN_ETTh1_drift.sh"
+    "./scripts/long_term_forecast_noise/ETT_script/MICN_ETTh1_dropout.sh"
+    "./scripts/long_term_forecast_noise/ETT_script/MICN_ETTh1_gaussian.sh"
+
 )
+
+
+
 
 # 或者自动获取当前目录下所有 .py 文件：
 # SCRIPTS=(*.py)
