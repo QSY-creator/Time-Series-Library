@@ -3,12 +3,8 @@
 # 1. 定义你要运行的脚本列表
 # 你可以手动列出，或者用 *.py, *.sh 自动获取
 SCRIPTS=(
-    "./scripts/long_term_forecast/ETT_script/TimesNet_ETTh1.sh"
-    "./scripts/long_term_forecast_noise/ETT_script/LightTS_ETTh1_dropout.sh"
-    "./scripts/long_term_forecast_noise/ETT_script/LightTS_ETTh1_gaussian.sh"
 
-    "./scripts/long_term_forecast_noise/ETT_script/MICN_ETTh1_dropout.sh"
-    "./scripts/long_term_forecast_noise/ETT_script/MICN_ETTh1_gaussian.sh"
+    "./scripts/long_term_forecast_noise/ETT_script/WPMixer_ETTh1_drift.sh"
 
 )
 
