@@ -4,7 +4,7 @@ from models import Autoformer, Transformer, TimesNet, Nonstationary_Transformer,
     Informer, LightTS, Reformer, ETSformer, Pyraformer, PatchTST, MICN, Crossformer, FiLM, iTransformer, \
     Koopa, TiDE, FreTS, TimeMixer, TSMixer, SegRNN, MambaSimple, TemporalFusionTransformer, SCINet, PAttn, TimeXer, \
     WPMixer, MultiPatchFormer, KANAD, MSGNet, TimeFilter, Sundial, TimeMoE, Chronos, Moirai, TiRex,\
-    TimesFM, Chronos2, RobustTimeMixer, RTimeMixer2, RTimeMixer3,DUETTimeMixer,DP_RTM,Super_DP,Super_DP_RTM,Seg_DP_RTM
+    TimesFM, Chronos2, RobustTimeMixer, RTimeMixer2, RTimeMixer3,DUETTimeMixer,DP_RTM,Super_DP,Super_DP_RTM,Seg_DP_RTM,S_DP_RTM
 
 
 class Exp_Basic(object):
@@ -57,7 +57,8 @@ class Exp_Basic(object):
             'DP_RTM': DP_RTM,
             'Super_DP': Super_DP,
             'Super_DP_RTM': Super_DP_RTM,
-            'Seg_DP_RTM': Seg_DP_RTM
+            'Seg_DP_RTM': Seg_DP_RTM,
+            'S_DP_RTM': S_DP_RTM
         }
         if args.model == 'Mamba':
             print('Please make sure you have successfully installed mamba_ssm')
