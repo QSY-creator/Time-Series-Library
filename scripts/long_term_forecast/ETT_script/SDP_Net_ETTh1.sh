@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=0,1,2
 
-model_name=S_DP_RTM
-data_name=ETTh1_noise_drift
+model_name=SDP_Net
+
 seq_len=96
 for pred_len in 96 192 336 720
 do
@@ -9,10 +9,10 @@ python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
   --root_path ./dataset/ETT-small/ \
-  --data_path ${data_name}.csv \
-  --model_id ${data_name}_$seq_len'_'$pred_len \
+  --data_path ETTh1.csv \
+  --model_id ETTh1_$seq_len'_'$pred_len \
   --model $model_name \
-  --data $data_name \
+  --data ETTh1 \
   --features M \
   --seq_len $seq_len \
   --pred_len $pred_len \
