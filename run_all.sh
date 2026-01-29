@@ -4,8 +4,8 @@
 # 你可以手动列出，或者用 *.py, *.sh 自动获取
 SCRIPTS=(
 
-    "./scripts/long_term_forecast_noise/ETT_script/WPMixer_ETTh1_drift.sh"
-
+    "./scripts/long_term_forecast/ETT_script/DP_RTM_ETTh1.sh"
+    "./scripts/long_term_forecast/ETT_script/DP_RTM2_ETTh1.sh"
 )
 
 
