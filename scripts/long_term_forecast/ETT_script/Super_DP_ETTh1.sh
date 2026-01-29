@@ -1,6 +1,6 @@
 export CUDA_VISIBLE_DEVICES=0,1,2
 
-model_name=DP_RTM2
+model_name=Super_DP
 
 seq_len=96
 e_layers=2
@@ -12,15 +12,15 @@ d_ff=32
 train_epochs=10
 patience=10
 batch_size=16
-data_name=ETTh1_noise_drift
+
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
   --root_path  ./dataset/ETT-small/\
-  --data_path $data_name.csv \
-  --model_id $data_name'_'$seq_len'_'96 \
+  --data_path ETTh1.csv \
+  --model_id ETTh1_$seq_len'_'96 \
   --model $model_name \
-  --data $data_name \
+  --data ETTh1 \
   --features M \
   --seq_len $seq_len \
   --label_len 0 \
@@ -45,10 +45,10 @@ python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
   --root_path ./dataset/ETT-small/ \
-  --data_path $data_name.csv \
-  --model_id $data_name'_'$seq_len'_'192 \
+  --data_path ETTh1.csv \
+  --model_id ETTh1_$seq_len'_'192 \
   --model $model_name \
-  --data $data_name \
+  --data ETTh1 \
   --features M \
   --seq_len $seq_len \
   --label_len 0 \
@@ -73,10 +73,10 @@ python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
   --root_path ./dataset/ETT-small/ \
-  --data_path $data_name.csv \
-  --model_id $data_name'_'$seq_len'_'336 \
+  --data_path ETTh1.csv \
+  --model_id ETTh1_$seq_len'_'336 \
   --model $model_name \
-  --data $data_name \
+  --data ETTh1 \
   --features M \
   --seq_len $seq_len \
   --label_len 0 \
@@ -101,10 +101,10 @@ python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
   --root_path ./dataset/ETT-small/ \
-  --data_path $data_name.csv \
-  --model_id $data_name'_'$seq_len'_'720 \
+  --data_path ETTh1.csv \
+  --model_id ETTh1_$seq_len'_'720 \
   --model $model_name \
-  --data $data_name \
+  --data ETTh1 \
   --features M \
   --seq_len $seq_len \
   --label_len 0 \
