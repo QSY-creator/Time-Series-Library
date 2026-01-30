@@ -1,112 +1,62 @@
 import pandas as pd
 import os
-import re
 
-# 结果文件路径
-RESULT_FILE = 'result_long_term_forecast.txt'
-OUTPUT_DIR = './final_reports/'
+RESULT_FILE = 'result_long_term_forecast.txt' # TSLib 默认生成的汇总文件
+if not os.path.exists(RESULT_FILE):
+    print(f"找不到 {RESULT_FILE}，请确认实验是否运行成功")
+    exit()
 
-if not os.path.exists(OUTPUT_DIR):
-    os.makedirs(OUTPUT_DIR)
-
-def parse_results():
-    if not os.path.exists(RESULT_FILE):
-        print(f"❌ 找不到 {RESULT_FILE}")
-        return []
-
-    parsed_data = []
-    
-    with open(RESULT_FILE, 'r') as f:
-        lines = f.readlines()
-        
+data = []
+with open(RESULT_FILE, 'r') as f:
+    lines = f.readlines()
     for line in lines:
-        line = line.strip()
-        if not line: continue
-        
-        # 解析格式: model_id, mse, mae
-        # 示例: ETTh1_Gaussian_Autoformer_pl96_MS, 0.345, 0.456
-        parts = line.split(',')
+        # 格式通常是: model_id, mse, mae ...
+        # 或者: setting: ... \n mse:0.123, mae:0.234
+        # 我们假设你用的是标准 TSLib，一行一条记录
+        parts = line.strip().split(',')
         if len(parts) < 3: continue
         
-        setting = parts[0]
-        try:
-            mse = float(parts[1].split(':')[-1]) if ':' in parts[1] else float(parts[1])
-            mae = float(parts[2].split(':')[-1]) if ':' in parts[2] else float(parts[2])
-        except:
-            continue
-
-        # == 反向解析元数据 ==
-        # 1. 噪声类型
-        noise = 'Clean'
-        if '_Gaussian_' in setting: noise = 'Gaussian'
-        elif '_Drift_' in setting: noise = 'Drift'
-        elif '_Dropout_' in setting: noise = 'Dropout'
-        # 如果不是上面三种，且不含Clean字样，默认为Clean
+        # 简单解析
+        setting_str = parts[0]
+        mse = float(parts[1].split(':')[-1]) if ':' in parts[1] else float(parts[1])
+        mae = float(parts[2].split(':')[-1]) if ':' in parts[2] else float(parts[2])
         
-        # 2. 数据集
-        dataset = 'Unknown'
+        # 从 setting_str 里反解出模型和噪声
+        # model_id 格式: ETTh1_Gaussian_Autoformer_MS
+        
+        noise_cat = 'Clean'
+        if '_Gaussian_' in setting_str: noise_cat = 'Gaussian'
+        elif '_Drift_' in setting_str: noise_cat = 'Drift'
+        elif '_Dropout_' in setting_str: noise_cat = 'Dropout'
+        
+        # 提取模型名称
+        model_name = "Unknown"
+        # 这里需要更智能的提取，或者依赖之前定义的 model_id
+        for m in ['Autoformer', 'Crossformer', 'iTransformer', 'Pyraformer', 'MICN', 'LightTS', 'TSMixer']:
+            if f"_{m}_" in setting_str:
+                model_name = m
+                break
+        
+        # 提取数据集
+        dataset_name = "Unknown"
         for d in ['ETTh1', 'ETTh2', 'ETTm1', 'Traffic', 'Electricity']:
-            if d in setting:
-                dataset = d
+            if d in setting_str:
+                dataset_name = d
                 break
-        
-        # 3. 预测长度 (pl96)
-        pred_len = 96
-        pl_match = re.search(r'_pl(\d+)_', setting)
-        if pl_match:
-            pred_len = int(pl_match.group(1))
-            
-        # 4. 模型名称
-        model = 'Unknown'
-        # 必须按顺序匹配，防止 Pyraformer 匹配到 Former
-        candidates = ['Autoformer', 'Crossformer', 'TimeMixer', 'iTransformer', 
-                      'Pyraformer', 'LightTS', 'MICN', 'SSSS']
-        for m in candidates:
-            if f"_{m}_" in setting:
-                model = m
-                break
-        
-        parsed_data.append({
-            'Dataset': dataset,
-            'Model': model,
-            'Noise': noise,
-            'PredLen': pred_len,
+                
+        data.append({
+            'Model': model_name,
+            'Dataset': dataset_name,
+            'Noise': noise_cat,
             'MSE': mse,
             'MAE': mae
         })
-        
-    return parsed_data
 
-data = parse_results()
-if not data:
-    print("没有解析到数据，请检查实验是否运行成功。")
-else:
-    df = pd.DataFrame(data)
-    
-    # 拆分为 4 个报告
-    cats = ['Clean', 'Gaussian', 'Drift', 'Dropout']
-    
-    for cat in cats:
-        # 筛选对应噪声
-        sub_df = df[df['Noise'] == cat]
-        
-        if sub_df.empty:
-            print(f"⚠️ {cat} 没有数据")
-            continue
-            
-        # 数据透视表
-        # 行: Dataset, Model
-        # 列: PredLen (96, 192, 336, 720)
-        # 值: MSE (你可以改成 MAE 或者同时显示)
-        pivot = sub_df.pivot_table(
-            index=['Dataset', 'Model'], 
-            columns='PredLen', 
-            values='MSE'
-        )
-        
-        # 保存
-        file_path = os.path.join(OUTPUT_DIR, f'Performance_{cat}_MSE.csv')
-        pivot.to_csv(file_path)
-        print(f"✅ 生成报表: {file_path}")
+df = pd.DataFrame(data)
 
-print("全部完成。")
+# 分割并保存
+cats = ['Clean', 'Gaussian', 'Drift', 'Dropout']
+for cat in cats:
+    sub_df = df[df['Noise'] == cat].sort_values(by=['Dataset', 'Model'])
+    sub_df.to_csv(f'Report_{cat}.csv', index=False)
+    print(f"已生成 Report_{cat}.csv")
