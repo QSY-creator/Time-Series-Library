@@ -17,7 +17,7 @@ if not os.path.exists(LOG_DIR): os.makedirs(LOG_DIR)
 csv_lock = threading.Lock()
 
 # 基础参数
-# 【极速配置】启用混合精度 + 优化workers平衡GPU和CPU
+# 【极速配置】5张RTX 4090 + 80核CPU + 大batch_size（不使用混合精度避免FFT错误）
 COMMON_ARGS_BASE = (
     "--task_name long_term_forecast "
     "--is_training 1 "
@@ -26,22 +26,21 @@ COMMON_ARGS_BASE = (
     "--features MS --c_out 1 " 
     "--des 'Exp' "
     "--itr 1 "            
-    "--patience 3 "       
+    "--patience 2 "       # 从3改为2，更快early stopping，节省20-30%时间
     "--train_epochs 10 "
-    "--num_workers 2 "   # 优化为2，平衡数据加载速度和CPU压力
-    "--use_amp "         # 启用混合精度训练，提速30-50%
+    "--num_workers 3 "   # 从2改为3，80核CPU完全能承受，提升数据加载速度
 )
 
-# === 模型特有参数 (针对RTX 4090 24GB显存优化) ===
+# === 模型特有参数 (5张RTX 4090极速配置 - 大batch_size充分利用GPU) ===
 MODEL_CONFIGS = {
-    'Autoformer':   {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 512 --n_heads 8", 'label_len': 48, 'batch_size': 128},
-    'Crossformer':  {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 512 --n_heads 8", 'label_len': 48, 'batch_size': 64},
-    'TimeMixer':    {'args': "--e_layers 2 --d_model 16 --d_ff 32 --down_sampling_layers 3 --down_sampling_method avg --down_sampling_window 2 --learning_rate 0.01", 'label_len': 0, 'batch_size': 256},
-    'iTransformer': {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 128 --d_ff 128", 'label_len': 48, 'batch_size': 128},
-    'Pyraformer':   {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 512 --n_heads 8 --window_size [2,2,2]", 'label_len': 48, 'batch_size': 128},
-    'LightTS':      {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7", 'label_len': 48, 'batch_size': 128},
-    'MICN':         {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7", 'label_len': 96, 'batch_size': 128},
-    'SSSS':         {'args': "--seg_len 24 --d_model 512 --dropout 0.5 --learning_rate 0.0001 --enc_in 7", 'label_len': 48, 'batch_size': 128}
+    'Autoformer':   {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 512 --n_heads 8", 'label_len': 48, 'batch_size': 256},
+    'Crossformer':  {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 512 --n_heads 8", 'label_len': 48, 'batch_size': 128},
+    'TimeMixer':    {'args': "--e_layers 2 --d_model 16 --d_ff 32 --down_sampling_layers 3 --down_sampling_method avg --down_sampling_window 2 --learning_rate 0.01", 'label_len': 0, 'batch_size': 512},
+    'iTransformer': {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 128 --d_ff 128", 'label_len': 48, 'batch_size': 256},
+    'Pyraformer':   {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 512 --n_heads 8 --window_size [2,2,2]", 'label_len': 48, 'batch_size': 256},
+    'LightTS':      {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7", 'label_len': 48, 'batch_size': 256},
+    'MICN':         {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7", 'label_len': 96, 'batch_size': 256},
+    'SSSS':         {'args': "--seg_len 24 --d_model 512 --dropout 0.5 --learning_rate 0.0001 --enc_in 7", 'label_len': 48, 'batch_size': 256}
 }
 MODELS = list(MODEL_CONFIGS.keys())
 
