@@ -25,7 +25,7 @@ COMMON_ARGS_BASE = (
     "--itr 1 "            
     "--patience 3 "       
     "--train_epochs 10 "
-    "--num_workers 1 "   # <--- 关键修改：防止 CPU 爆炸
+    "--num_workers 6 "   # <--- 关键修改：防止 CPU 爆炸
 )
 
 # === 模型特有参数 (保持不变) ===
