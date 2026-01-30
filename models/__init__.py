@@ -4,7 +4,7 @@ from . import DLinear, FEDformer, Informer, LightTS, Reformer, ETSformer
 from . import Pyraformer, PatchTST, MICN, Crossformer, FiLM, iTransformer
 from . import Koopa, TiDE, FreTS, TimeMixer, TSMixer, SegRNN
 from . import TemporalFusionTransformer, SCINet, PAttn, TimeXer
-from . import WPMixer, MultiPatchFormer, KANAD, MSGNet, TimeFilter,Super_DP,DP_RTM,RTimeMixer2,RobustTimeMixer,Super_DR
+from . import WPMixer, MultiPatchFormer, KANAD, MSGNet, TimeFilter,Super_DP,DP_RTM,RTimeMixer2,RobustTimeMixer,Super_DR,SSSS
 
 # Optional models - gracefully skip if dependencies are missing
 try:
