@@ -13,6 +13,9 @@ PRED_LENS = [96, 192, 336, 720]
 LOG_DIR = "./task_logs"
 if not os.path.exists(LOG_DIR): os.makedirs(LOG_DIR)
 
+# 线程安全锁，用于保护CSV文件写入
+csv_lock = threading.Lock()
+
 # 基础参数
 # 【核心修改】新增 --num_workers 1，解放你的 CPU！
 COMMON_ARGS_BASE = (
@@ -60,6 +63,13 @@ def check_gpu_environment():
     print(f"✅ 检测到 {count} 张显卡。")
     return list(range(count))
 
+def initialize_log_file():
+    """初始化CSV日志文件，确保有正确的表头"""
+    if not os.path.exists(LOG_FILE):
+        header_df = pd.DataFrame(columns=['Time', 'Model', 'Dataset', 'Noise', 'PredLen', 'Status', 'GPU', 'ErrorMsg'])
+        header_df.to_csv(LOG_FILE, index=False)
+        print(f"📝 已创建日志文件: {LOG_FILE}")
+
 def get_finished_tasks():
     finished = set()
     if os.path.exists(LOG_FILE):
@@ -71,6 +81,9 @@ def get_finished_tasks():
     return finished
 
 # ================= 3. 任务装载 =================
+# 初始化日志文件（确保有表头）
+initialize_log_file()
+
 task_queue = queue.Queue()
 finished_tasks = get_finished_tasks()
 
@@ -108,8 +121,10 @@ def worker(gpu_id):
         try: task = task_queue.get(block=False)
         except queue.Empty: break
         
-        # 始终传 --gpu 0，配合环境变量欺骗 TSLib
-        full_cmd = f"{task['cmd']} --gpu 0"
+        # 始终传 --use_gpu 和 --gpu 0，确保使用GPU训练
+        # 注意：虽然传入 --gpu 0，但通过 CUDA_VISIBLE_DEVICES 环境变量
+        # 已经将物理GPU隔离，所以每个线程实际使用不同的物理GPU
+        full_cmd = f"{task['cmd']} --use_gpu --gpu 0"
         
         print(f"⚡ [GPU {gpu_id}] Start: {task['model']} | {task['dataset']} | {task['noise']} | {task['pred_len']}")
         status = "Success"
@@ -130,9 +145,17 @@ def worker(gpu_id):
                 
                 if ret.returncode != 0:
                     status = "Failed"
-                    with open(task['log_path'], 'r') as f_err:
-                        lines = f_err.readlines()
-                        error_msg = "".join(lines[-3:]).replace('\n', ' ')
+                    try:
+                        with open(task['log_path'], 'r', encoding='utf-8', errors='ignore') as f_err:
+                            lines = f_err.readlines()
+                            # 提取最后10行中的有效错误信息
+                            error_lines = [line.strip() for line in lines[-10:] if line.strip()]
+                            error_msg = " | ".join(error_lines[-3:]) if error_lines else "查看日志文件获取详情"
+                            # 限制错误信息长度，避免CSV格式问题
+                            if len(error_msg) > 500:
+                                error_msg = error_msg[:497] + "..."
+                    except Exception as read_err:
+                        error_msg = f"无法读取日志: {str(read_err)}"
             except Exception as e:
                 status = "Error"
                 error_msg = str(e)
@@ -145,7 +168,10 @@ def worker(gpu_id):
             'Noise': task['noise'], 'PredLen': task['pred_len'],
             'Status': status, 'GPU': gpu_id, 'ErrorMsg': error_msg
         }
-        pd.DataFrame([new_row]).to_csv(LOG_FILE, mode='a', header=False, index=False)
+        
+        # 使用线程锁保护CSV文件写入，防止多线程冲突
+        with csv_lock:
+            pd.DataFrame([new_row]).to_csv(LOG_FILE, mode='a', header=False, index=False)
         
         if status == "Success":
             print(f"✅ [GPU {gpu_id}] Done ({duration}s)")
