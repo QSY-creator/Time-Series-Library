@@ -6,13 +6,14 @@ import datetime
 import pandas as pd
 import time
 import sys
+import torch # 引入 torch 做检查
 
-# =========================================================================
-# 1. 实验核心配置
-# =========================================================================
-
+# ================= 配置区 =================
 PRED_LENS = [96, 192, 336, 720]
+LOG_DIR = "./task_logs" # 新增：日志文件夹
+if not os.path.exists(LOG_DIR): os.makedirs(LOG_DIR)
 
+# 基础参数
 COMMON_ARGS_BASE = (
     "--task_name long_term_forecast "
     "--is_training 1 "
@@ -25,8 +26,11 @@ COMMON_ARGS_BASE = (
     "--train_epochs 10 " 
 )
 
+# 模型配置 (保持你的原设)
 MODEL_CONFIGS = {
     'Autoformer':   {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 512 --n_heads 8", 'label_len': 48, 'batch_size': 64},
+    # ... (其他模型配置保持不变，为节省篇幅省略，请直接用你原来 auto_run_final.py 里的 MODEL_CONFIGS 字典)
+    # 务必把剩下的 Crossformer, TimeMixer 等填回来！
     'Crossformer':  {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 512 --n_heads 8", 'label_len': 48, 'batch_size': 32},
     'TimeMixer':    {'args': "--e_layers 2 --d_model 16 --d_ff 32 --down_sampling_layers 3 --down_sampling_method avg --down_sampling_window 2 --learning_rate 0.01", 'label_len': 0, 'batch_size': 256},
     'iTransformer': {'args': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 128 --d_ff 128", 'label_len': 48, 'batch_size': 64},
@@ -37,6 +41,7 @@ MODEL_CONFIGS = {
 }
 MODELS = list(MODEL_CONFIGS.keys())
 
+# 数据集与噪声 (保持不变)
 DATA_MAP = {
     'ETTh1':       {'code': 'ETTh1',  'file': 'ETTh1.csv',   'folder': 'ETT-small/'},
     'ETTh2':       {'code': 'ETTh2',  'file': 'ETTh2.csv',   'folder': 'ETT-small/'},
@@ -44,175 +49,128 @@ DATA_MAP = {
     'Traffic':     {'code': 'custom', 'file': 'traffic.csv', 'folder': 'traffic/'},
     'Electricity': {'code': 'custom', 'file': 'electricity.csv', 'folder': 'electricity/'}
 }
-
-NOISE_TYPES = {
-    'Clean':    '', 
-    'Gaussian': '_noise_gaussian',
-    'Drift':    '_noise_drift',
-    'Dropout':  '_noise_dropout'
-}
-
+NOISE_TYPES = {'Clean': '', 'Gaussian': '_noise_gaussian', 'Drift': '_noise_drift', 'Dropout': '_noise_dropout'}
 LOG_FILE = "experiment_log_final.csv"
 
-# =========================================================================
-# 2. 断点续跑逻辑 & 任务装载
-# =========================================================================
+# ================= 核心检查 =================
+def check_gpu_environment():
+    print("🔍 正在检查 PyTorch GPU 环境...")
+    if not torch.cuda.is_available():
+        print("❌ 致命错误: PyTorch 检测不到 GPU！任务正在 CPU 上运行！")
+        print("   请检查: 1. 是否安装了 cpu 版 torch? 2. 驱动是否正常?")
+        sys.exit(1)
+    
+    count = torch.cuda.device_count()
+    print(f"✅ 检测到 {count} 张显卡。准备起飞！")
+    return list(range(count))
 
+# ================= 任务装载 (带去重) =================
 def get_finished_tasks():
-    """读取日志文件，获取已经跑完的任务签名"""
     finished = set()
     if os.path.exists(LOG_FILE):
         try:
             df = pd.read_csv(LOG_FILE)
-            # 筛选状态为 Success 的任务
-            # 注意：如果状态是 Failed，我们不加入集合，这样下次会重跑
-            success_df = df[df['Status'] == 'Success']
-            for _, row in success_df.iterrows():
-                # 构造唯一签名: (Model, Dataset, Noise, PredLen)
-                # 确保类型一致
-                sig = (
-                    str(row['Model']), 
-                    str(row['Dataset']), 
-                    str(row['Noise']), 
-                    int(row['PredLen'])
-                )
-                finished.add(sig)
-        except Exception as e:
-            print(f"⚠️ 读取日志文件出错，将重新开始: {e}")
+            for _, row in df[df['Status'] == 'Success'].iterrows():
+                finished.add((str(row['Model']), str(row['Dataset']), str(row['Noise']), int(row['PredLen'])))
+        except: pass
     return finished
-
-def get_gpus():
-    try:
-        output = subprocess.check_output("nvidia-smi -L", shell=True).decode()
-        count = len(output.strip().split('\n'))
-        return list(range(count))
-    except:
-        return []
-
-# 初始化日志
-if not os.path.exists(LOG_FILE):
-    df_log = pd.DataFrame(columns=['Time', 'Model', 'Dataset', 'Noise', 'PredLen', 'Status', 'GPU', 'ErrorMsg'])
-    df_log.to_csv(LOG_FILE, index=False)
 
 task_queue = queue.Queue()
 finished_tasks = get_finished_tasks()
-print(f"📂 检测到 {len(finished_tasks)} 个任务已完成，将自动跳过。")
 
-# 装载任务
-skipped_count = 0
+print("📦 装载任务中...")
 for model in MODELS:
     cfg = MODEL_CONFIGS[model]
-    
     for data_key, data_info in DATA_MAP.items():
         for noise_name, suffix in NOISE_TYPES.items():
             for pred_len in PRED_LENS:
+                if (model, data_key, noise_name, pred_len) in finished_tasks: continue
                 
-                # 1. 检查是否已完成
-                # 这里的 noise_name 要和 LOG_FILE 里的记录一致
-                # LOG_FILE 里记录的是 'Gaussian', 'Clean' 等 keys
-                current_sig = (model, data_key, noise_name, pred_len)
-                
-                if current_sig in finished_tasks:
-                    skipped_count += 1
-                    continue
-                
-                # 2. 构造文件名
                 raw_filename = data_info['file']
-                if suffix == '':
-                    file_name = raw_filename
-                else:
-                    base, ext = os.path.splitext(raw_filename)
-                    file_name = f"{base}{suffix}{ext}"
+                file_name = raw_filename if suffix == '' else f"{os.path.splitext(raw_filename)[0]}{suffix}{os.path.splitext(raw_filename)[1]}"
                 
-                root_path = f"./dataset/{data_info['folder']}"
-                
-                # 3. 构造命令
+                # 构造命令
                 cmd = (
                     f"python -u run.py {COMMON_ARGS_BASE} "
                     f"--model_id {data_key}_{noise_name}_{model}_pl{pred_len}_MS "
-                    f"--model {model} "
-                    f"--data {data_info['code']} "
-                    f"--root_path {root_path} "
-                    f"--data_path {file_name} "
-                    f"--pred_len {pred_len} "
-                    f"--label_len {cfg['label_len']} " 
-                    f"--batch_size {cfg['batch_size']} "
+                    f"--model {model} --data {data_info['code']} "
+                    f"--root_path ./dataset/{data_info['folder']} --data_path {file_name} "
+                    f"--pred_len {pred_len} --label_len {cfg['label_len']} --batch_size {cfg['batch_size']} "
                     f"{cfg['args']}" 
                 )
                 
+                # 构造日志文件路径: ./task_logs/Autoformer_ETTh1_Clean_96.log
+                log_path = os.path.join(LOG_DIR, f"{model}_{data_key}_{noise_name}_{pred_len}.log")
+                
                 task_queue.put({
-                    'cmd': cmd,
-                    'model': model,
-                    'dataset': data_key,
-                    'noise': noise_name,
-                    'pred_len': pred_len
+                    'cmd': cmd, 'model': model, 'dataset': data_key, 
+                    'noise': noise_name, 'pred_len': pred_len, 'log_path': log_path
                 })
 
-print(f"🚀 任务加载完毕: 跳过 {skipped_count} 个, 剩余 {task_queue.qsize()} 个待执行。")
+print(f"🚀 剩余任务数: {task_queue.qsize()}")
 
-# =========================================================================
-# 3. 执行引擎 (不变)
-# =========================================================================
-
+# ================= 执行引擎 (日志重定向版) =================
 def worker(gpu_id):
     while not task_queue.empty():
-        try:
-            task = task_queue.get(block=False)
-        except queue.Empty:
-            break
-            
-        full_cmd = f"{task['cmd']} --gpu {gpu_id}"
-        print(f"⚡ [GPU {gpu_id}] Start: {task['model']} | {task['dataset']} | {task['noise']} | {task['pred_len']}")
+        try: task = task_queue.get(block=False)
+        except queue.Empty: break
         
+        # 强制指定 GPU
+        full_cmd = f"{task['cmd']} --gpu {gpu_id}"
+        
+        print(f"⚡ [GPU {gpu_id}] Start: {task['model']} - {task['dataset']} ({task['noise']})")
         status = "Success"
         error_msg = ""
         start_t = time.time()
         
-        try:
-            env = os.environ.copy()
-            ret = subprocess.run(full_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=env)
-            if ret.returncode != 0:
-                status = "Failed"
-                error_msg = ret.stderr[-500:].replace('\n', ' || ')
-        except Exception as e:
-            status = "Error"
-            error_msg = str(e)
-            
+        # === 关键修改: 输出重定向到文件，不再堵塞终端 ===
+        with open(task['log_path'], 'w') as f_log:
+            try:
+                # 设置环境变量，确保 subprocess 只能看到这一张卡
+                env = os.environ.copy()
+                env['CUDA_VISIBLE_DEVICES'] = str(gpu_id) # 双重保险
+                
+                # 运行任务，stdout和stderr都写入文件
+                ret = subprocess.run(
+                    full_cmd, shell=True, 
+                    stdout=f_log, stderr=subprocess.STDOUT, 
+                    env=env
+                )
+                
+                if ret.returncode != 0:
+                    status = "Failed"
+                    # 读取日志文件的最后几行作为错误信息
+                    with open(task['log_path'], 'r') as f_err:
+                        lines = f_err.readlines()
+                        error_msg = "".join(lines[-5:]).replace('\n', ' ')
+            except Exception as e:
+                status = "Error"
+                error_msg = str(e)
+
         duration = round(time.time() - start_t, 2)
         
-        # 写入日志 (加了 flush 确保断电也能写入)
+        # 写入总表
         new_row = {
             'Time': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-            'Model': task['model'],
-            'Dataset': task['dataset'],
-            'Noise': task['noise'],
-            'PredLen': task['pred_len'],
-            'Status': status,
-            'GPU': gpu_id,
-            'ErrorMsg': error_msg
+            'Model': task['model'], 'Dataset': task['dataset'],
+            'Noise': task['noise'], 'PredLen': task['pred_len'],
+            'Status': status, 'GPU': gpu_id, 'ErrorMsg': error_msg
         }
         pd.DataFrame([new_row]).to_csv(LOG_FILE, mode='a', header=False, index=False)
         
         if status == "Success":
             print(f"✅ [GPU {gpu_id}] Done ({duration}s)")
         else:
-            print(f"❌ [GPU {gpu_id}] Failed")
+            print(f"❌ [GPU {gpu_id}] Failed! 查看详情: {task['log_path']}")
             
         task_queue.task_done()
 
-gpus = get_gpus()
-if not gpus:
-    print("❌ 无 GPU")
-    sys.exit()
-
-print(f"💻 GPU 列表: {gpus}")
+# 启动
+gpus = check_gpu_environment() # 这里会先检查，如果没显卡直接报错退出
 threads = []
 for gpu in gpus:
     t = threading.Thread(target=worker, args=(gpu,))
     t.start()
     threads.append(t)
-
-for t in threads:
-    t.join()
-
-print("\n🎉 全部结束！")
+for t in threads: t.join()
+print("🎉 全部结束")
