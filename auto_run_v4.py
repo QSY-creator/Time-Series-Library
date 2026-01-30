@@ -121,10 +121,10 @@ def worker(gpu_id):
         try: task = task_queue.get(block=False)
         except queue.Empty: break
         
-        # 始终传 --use_gpu 和 --gpu 0，确保使用GPU训练
+        # 始终传 --use_gpu True 和 --gpu 0，确保使用GPU训练
         # 注意：虽然传入 --gpu 0，但通过 CUDA_VISIBLE_DEVICES 环境变量
         # 已经将物理GPU隔离，所以每个线程实际使用不同的物理GPU
-        full_cmd = f"{task['cmd']} --use_gpu --gpu 0"
+        full_cmd = f"{task['cmd']} --use_gpu True --gpu 0"
         
         print(f"⚡ [GPU {gpu_id}] Start: {task['model']} | {task['dataset']} | {task['noise']} | {task['pred_len']}")
         status = "Success"
@@ -143,19 +143,30 @@ def worker(gpu_id):
                     env=env
                 )
                 
-                if ret.returncode != 0:
-                    status = "Failed"
-                    try:
-                        with open(task['log_path'], 'r', encoding='utf-8', errors='ignore') as f_err:
-                            lines = f_err.readlines()
-                            # 提取最后10行中的有效错误信息
+                # 通过检查日志内容来判断任务是否真正成功
+                # 不能只依赖 returncode，因为即使训练成功，进程也可能返回非0
+                try:
+                    with open(task['log_path'], 'r', encoding='utf-8', errors='ignore') as f_check:
+                        log_content = f_check.read()
+                        # 检查是否包含成功完成的标志
+                        if 'mse:' in log_content.lower() and 'test shape:' in log_content.lower():
+                            status = "Success"
+                            error_msg = ""
+                        elif 'error:' in log_content.lower() or 'exception' in log_content.lower() or ret.returncode != 0:
+                            status = "Failed"
+                            # 提取错误信息
+                            lines = log_content.split('\n')
                             error_lines = [line.strip() for line in lines[-10:] if line.strip()]
                             error_msg = " | ".join(error_lines[-3:]) if error_lines else "查看日志文件获取详情"
-                            # 限制错误信息长度，避免CSV格式问题
                             if len(error_msg) > 500:
                                 error_msg = error_msg[:497] + "..."
-                    except Exception as read_err:
-                        error_msg = f"无法读取日志: {str(read_err)}"
+                        else:
+                            # 日志内容不完整或异常
+                            status = "Failed"
+                            error_msg = "日志内容异常，无法确定任务状态"
+                except Exception as read_err:
+                    status = "Error"
+                    error_msg = f"无法读取日志: {str(read_err)}"
             except Exception as e:
                 status = "Error"
                 error_msg = str(e)
