@@ -17,7 +17,7 @@ if not os.path.exists(LOG_DIR): os.makedirs(LOG_DIR)
 csv_lock = threading.Lock()
 
 # 基础参数
-# 【极速配置】5张RTX 4090 + 80核CPU + 大batch_size（不使用混合精度避免FFT错误）
+# 【稳定极速配置】5张RTX 4090 + 80核CPU（不使用混合精度，确保稳定性）
 COMMON_ARGS_BASE = (
     "--task_name long_term_forecast "
     "--is_training 1 "
@@ -26,9 +26,9 @@ COMMON_ARGS_BASE = (
     "--features MS --c_out 1 " 
     "--des 'Exp' "
     "--itr 1 "            
-    "--patience 2 "       # 从3改为2，更快early stopping，节省20-30%时间
+    "--patience 2 "       # 从3改为2，更快early stopping
     "--train_epochs 10 "
-    "--num_workers 3 "   # 从2改为3，80核CPU完全能承受，提升数据加载速度
+    "--num_workers 3 "   # 从2改为3，80核CPU完全能承受
 )
 
 # === 模型特有参数 (5张RTX 4090极速配置 - 大batch_size充分利用GPU) ===
