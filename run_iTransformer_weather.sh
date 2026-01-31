@@ -4,7 +4,7 @@
 # 在不同服务器上，修改这个名字！
 # 例如服务器1写: NODE_NAME="Server1"
 # 例如服务器2写: NODE_NAME="Server2"
-NODE_NAME="Server_itrans_traffic" 
+NODE_NAME="Server_itrans_weather" 
 
 # 日志文件夹
 LOG_DIR="./batch_logs"
