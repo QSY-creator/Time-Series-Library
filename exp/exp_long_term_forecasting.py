@@ -34,7 +34,8 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         #一会注意改过来
         # model_optim = optim.Adam(self.model.parameters(), lr=self.args.learning_rate)
         # 在定义优化器时
-        model_optim = optim.Adam(model.parameters(), lr=args.learning_rate, weight_decay=1e-4)
+        # 加上 self.
+        model_optim = optim.Adam(self.model.parameters(), lr=self.args.learning_rate, weight_decay=1e-4)
         return model_optim
 
     def _select_criterion(self):
