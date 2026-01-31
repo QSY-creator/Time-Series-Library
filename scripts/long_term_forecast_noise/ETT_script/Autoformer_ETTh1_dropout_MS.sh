@@ -31,7 +31,7 @@ python -u run.py \
   --model_id $data_name'_'96'_'192 \
   --model $model_name \
   --data $data_name \
-  --features M \
+  --features MS \
   --seq_len 96 \
   --label_len 48 \
   --pred_len 192 \
@@ -40,7 +40,7 @@ python -u run.py \
   --factor 3 \
   --enc_in 7 \
   --dec_in 7 \
-  --c_out 7 \
+  --c_out 1 \
   --des 'Exp' \
   --itr 1
 
@@ -52,7 +52,7 @@ python -u run.py \
   --model_id $data_name'_'96'_'336 \
   --model $model_name \
   --data $data_name \
-  --features M \
+  --features MS \
   --seq_len 96 \
   --label_len 48 \
   --pred_len 336 \
@@ -61,7 +61,7 @@ python -u run.py \
   --factor 3 \
   --enc_in 7 \
   --dec_in 7 \
-  --c_out 7 \
+  --c_out 1 \
   --des 'Exp' \
   --itr 1
 
@@ -73,7 +73,7 @@ python -u run.py \
   --model_id $data_name'_'96'_'720 \
   --model $model_name \
   --data $data_name \
-  --features M \
+  --features MS \
   --seq_len 96 \
   --label_len 48 \
   --pred_len 720 \
@@ -82,6 +82,6 @@ python -u run.py \
   --factor 3 \
   --enc_in 7 \
   --dec_in 7 \
-  --c_out 7 \
+  --c_out 1 \
   --des 'Exp' \
   --itr 1
