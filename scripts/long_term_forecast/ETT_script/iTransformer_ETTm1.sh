@@ -1,8 +1,7 @@
 export CUDA_VISIBLE_DEVICES=0,1,2
 
-model_name=LightTS
-data_name=ETTh1
-
+model_name=iTransformer
+data_name=ETTm1
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
@@ -22,6 +21,8 @@ python -u run.py \
   --dec_in 7 \
   --c_out 7 \
   --des 'Exp' \
+  --d_model 128 \
+  --d_ff 128 \
   --itr 1
 
 python -u run.py \
@@ -43,6 +44,8 @@ python -u run.py \
   --dec_in 7 \
   --c_out 7 \
   --des 'Exp' \
+  --d_model 128 \
+  --d_ff 128 \
   --itr 1
 
 python -u run.py \
@@ -64,6 +67,8 @@ python -u run.py \
   --dec_in 7 \
   --c_out 7 \
   --des 'Exp' \
+  --d_model 128 \
+  --d_ff 128 \
   --itr 1
 
 python -u run.py \
@@ -85,4 +90,6 @@ python -u run.py \
   --dec_in 7 \
   --c_out 7 \
   --des 'Exp' \
+  --d_model 128 \
+  --d_ff 128 \
   --itr 1

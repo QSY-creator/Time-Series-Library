@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=0,1,2
 
 model_name=LightTS
-data_name=ETTh1
+data_name=ETTh2
 
 python -u run.py \
   --task_name long_term_forecast \

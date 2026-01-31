@@ -254,7 +254,9 @@ class Exp_Long_Term_Forecast(Exp_Basic):
 
         mae, mse, rmse, mape, mspe = metric(preds, trues)
         print('mse:{}, mae:{}, dtw:{}'.format(mse, mae, dtw))
-        f = open("result_long_term_forecast.txt", 'a')
+        # 修改：在文件名中加入 des 参数，实现物理隔离
+        file_name = "result_long_term_forecast_{}.txt".format(self.args.des)
+        f = open(file_name, 'a')
         f.write(setting + "  \n")
         f.write('mse:{}, mae:{}, dtw:{}'.format(mse, mae, dtw))
         f.write('\n')
