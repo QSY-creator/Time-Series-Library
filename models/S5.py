@@ -4,7 +4,10 @@ import torch.nn as nn
 class Model(nn.Module):
     """
     DeRNN: Decomposed Recurrent Neural Network
-    Paper Concept: A Dual-Track framework separating Global Trend (Linear) and Local Dynamics (Patch-GRU).
+    Structure: 
+        - Track A (Anchor): Global Trend (Linear + Dropout)
+        - Track B (Feature): Local Dynamics (Patch-GRU)
+        - Fusion: Adaptive Gated Fusion
     """
     def __init__(self, configs):
         super(Model, self).__init__()
@@ -21,8 +24,9 @@ class Model(nn.Module):
         # Track 1: Anchor Track (Global Trend)
         # ------------------------------------------------------------
         # Applies a linear mapping across the entire look-back window.
-        # Channel Independent: Weights are shared across all channels.
+        # [NEW]: Added Dropout to prevent overfitting on small datasets (ETTh1).
         # ============================================================
+        self.anchor_dropout = nn.Dropout(self.dropout)
         self.anchor_linear = nn.Linear(self.seq_len, self.pred_len)
         
         # ============================================================
@@ -63,7 +67,7 @@ class Model(nn.Module):
         B, L, C = x_enc.shape
         
         # -----------------------------------------------
-        # Step 1: RevIN (Normalization) - 核心稳健性操作
+        # Step 1: RevIN (Normalization) - 稳健性基石
         # -----------------------------------------------
         means = x_enc.mean(1, keepdim=True)
         x_enc_norm = x_enc - means
@@ -73,9 +77,13 @@ class Model(nn.Module):
         # -----------------------------------------------
         # Track A: Anchor Track (Trend Processing)
         # -----------------------------------------------
-        # Permute to [Batch, Channels, Seq_Len] to apply Linear on time dimension
+        # Permute to [Batch, Channels, Seq_Len] so Linear applies to time dimension
         # resulting in Channel Independence (CI).
         trend_input = x_enc_norm.permute(0, 2, 1) 
+        
+        # [关键修改]: 先 Dropout 再 Linear，强迫模型学习鲁棒特征
+        trend_input = self.anchor_dropout(trend_input)
+        
         trend_pred = self.anchor_linear(trend_input)  # [Batch, Channels, Pred_Len]
         trend_pred = trend_pred.permute(0, 2, 1)      # [Batch, Pred_Len, Channels]
 
