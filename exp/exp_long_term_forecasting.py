@@ -31,11 +31,9 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         return data_set, data_loader
 
     def _select_optimizer(self):
-        #一会注意改过来
-        # model_optim = optim.Adam(self.model.parameters(), lr=self.args.learning_rate)
-        # 在定义优化器时
-        # 加上 self.
-        model_optim = optim.Adam(self.model.parameters(), lr=self.args.learning_rate, weight_decay=1e-4)
+        
+        model_optim = optim.Adam(self.model.parameters(), lr=self.args.learning_rate)
+ 
         return model_optim
 
     def _select_criterion(self):
