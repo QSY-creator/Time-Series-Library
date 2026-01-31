@@ -14,15 +14,15 @@ mkdir -p "$LOG_DIR"
 # 1. 定义脚本列表 
 # ⚠️ 注意：Bash数组元素之间用【空格】或者【换行】分隔，千万不要用逗号！
 SCRIPTS=(
-"./scripts/long_term_forecast/Traffic_script/DLinear_Traffic.sh"
-"./scripts/long_term_forecast/Traffic_script/Autoformer_Traffic.sh"
-"./scripts/long_term_forecast/Traffic_script/CrossFormer_Traffic.sh"
-"./scripts/long_term_forecast/Traffic_script/TSMixer_Traffic.sh"
-"./scripts/long_term_forecast/Traffic_script/iTransFormer_Traffic.sh"
-"./scripts/long_term_forecast/Traffic_script/Pyraformer_Traffic.sh"
-"./scripts/long_term_forecast/Traffic_script/LightTS_Traffic.sh"
-"./scripts/long_term_forecast/Traffic_script/TimeMixer_Traffic.sh"
-"./scripts/long_term_forecast/Traffic_script/SSSS_Traffic.sh"
+"./scripts/long_term_forecast/Traffic_script/DLinear.sh"
+"./scripts/long_term_forecast/Traffic_script/Autoformer.sh"
+"./scripts/long_term_forecast/Traffic_script/CrossFormer.sh"
+"./scripts/long_term_forecast/Traffic_script/TSMixer.sh"
+"./scripts/long_term_forecast/Traffic_script/iTransFormer.sh"
+"./scripts/long_term_forecast/Traffic_script/Pyraformer.sh"
+"./scripts/long_term_forecast/Traffic_script/LightTS.sh"
+"./scripts/long_term_forecast/Traffic_script/TimeMixer.sh"
+"./scripts/long_term_forecast/Traffic_script/SSSS.sh"
 )
 
 SUCCESS_LIST=()

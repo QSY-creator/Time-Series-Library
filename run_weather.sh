@@ -14,15 +14,15 @@ mkdir -p "$LOG_DIR"
 # 1. 定义脚本列表 
 # ⚠️ 注意：Bash数组元素之间用【空格】或者【换行】分隔，千万不要用逗号！
 SCRIPTS=(
-"./scripts/long_term_forecast/Weather_script/DLinear_Weather.sh"
-"./scripts/long_term_forecast/Weather_script/Autoformer_Weather.sh"
-"./scripts/long_term_forecast/Weather_script/CrossFormer_Weather.sh"
-"./scripts/long_term_forecast/Weather_script/TSMixer_Weather.sh"
-"./scripts/long_term_forecast/Weather_script/iTransFormer_Weather.sh"
-"./scripts/long_term_forecast/Weather_script/Pyraformer_Weather.sh"
-"./scripts/long_term_forecast/Weather_script/LightTS_Weather.sh"
-"./scripts/long_term_forecast/Weather_script/TimeMixer_Weather.sh"
-"./scripts/long_term_forecast/Weather_script/SSSS_Weather.sh"
+"./scripts/long_term_forecast/Weather_script/DLinear.sh"
+"./scripts/long_term_forecast/Weather_script/Autoformer.sh"
+"./scripts/long_term_forecast/Weather_script/CrossFormer.sh"
+"./scripts/long_term_forecast/Weather_script/TSMixer.sh"
+"./scripts/long_term_forecast/Weather_script/iTransFormer.sh"
+"./scripts/long_term_forecast/Weather_script/Pyraformer.sh"
+"./scripts/long_term_forecast/Weather_script/LightTS.sh"
+"./scripts/long_term_forecast/Weather_script/TimeMixer.sh"
+"./scripts/long_term_forecast/Weather_script/SSSS.sh"
 )
 
 SUCCESS_LIST=()

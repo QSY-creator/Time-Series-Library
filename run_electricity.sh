@@ -14,15 +14,15 @@ mkdir -p "$LOG_DIR"
 # 1. 定义脚本列表 
 # ⚠️ 注意：Bash数组元素之间用【空格】或者【换行】分隔，千万不要用逗号！
 SCRIPTS=(
-    "./scripts/long_term_forecast/ECL_script/DLinear_Electricity.sh"
-    "./scripts/long_term_forecast/ECL_script/Autoformer_Electricity.sh"
-    "./scripts/long_term_forecast/ECL_script/CrossFormer_Electricity.sh"
-    "./scripts/long_term_forecast/ECL_script/TSMixer_Electricity.sh"
-    "./scripts/long_term_forecast/ECL_script/iTransFormer_Electricity.sh"
-    "./scripts/long_term_forecast/ECL_script/Pyraformer_Electricity.sh"
-    "./scripts/long_term_forecast/ECL_script/LightTS_Electricity.sh"
-    "./scripts/long_term_forecast/ECL_script/TimeMixer_Electricity.sh"
-    "./scripts/long_term_forecast/ECL_script/SSSS_Electricity.sh"
+    "./scripts/long_term_forecast/ECL_script/DLinear.sh"
+    "./scripts/long_term_forecast/ECL_script/Autoformer.sh"
+    "./scripts/long_term_forecast/ECL_script/CrossFormer.sh"
+    "./scripts/long_term_forecast/ECL_script/TSMixer.sh"
+    "./scripts/long_term_forecast/ECL_script/iTransFormer.sh"
+    "./scripts/long_term_forecast/ECL_script/Pyraformer.sh"
+    "./scripts/long_term_forecast/ECL_script/LightTS.sh"
+    "./scripts/long_term_forecast/ECL_script/TimeMixer.sh"
+    "./scripts/long_term_forecast/ECL_script/SSSS.sh"
 )
 
 SUCCESS_LIST=()
