@@ -21,7 +21,7 @@ python -u run.py \
   --enc_in 7 \
   --d_model 512 \
   --dropout 0.5 \
-  --learning_rate 0.00005 \
+  --learning_rate 0.0001 \
   --des 'Exp' \
   --itr 1
 done
