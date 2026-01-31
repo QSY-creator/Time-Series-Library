@@ -1,7 +1,7 @@
 export CUDA_VISIBLE_DEVICES=0,1,2
 
 model_name=Autoformer
-data_name=ETTh1_noise_dropout
+data_name=ETTh1_noise_gaussian
 python -u run.py \
   --task_name long_term_forecast \
   --is_training 1 \
@@ -10,7 +10,7 @@ python -u run.py \
   --model_id $data_name'_'96'_'96 \
   --model $model_name \
   --data $data_name \
-  --features M \
+  --features MS \
   --seq_len 96 \
   --label_len 48 \
   --pred_len 96 \
@@ -19,7 +19,7 @@ python -u run.py \
   --factor 3 \
   --enc_in 7 \
   --dec_in 7 \
-  --c_out 7 \
+  --c_out 1 \
   --des 'Exp' \
   --itr 1
 

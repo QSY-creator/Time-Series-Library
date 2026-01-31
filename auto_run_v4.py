@@ -33,15 +33,24 @@ COMMON_ARGS_BASE = (
     "--num_workers 2 "    # ⚡ 绝对不要改大！
 )
 
+# ================= 调整后的模型参数配置 =================
 MODEL_ARGS = {
-    'Autoformer':   "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 512 --n_heads 8",
-    'Crossformer':  "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 512 --n_heads 8",
-    'TimeMixer':    "--e_layers 2 --d_model 16 --d_ff 32 --down_sampling_layers 3 --down_sampling_method avg --down_sampling_window 2 --learning_rate 0.01",
-    'iTransformer': "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 128 --d_ff 128",
-    'Pyraformer':   "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --d_model 512 --n_heads 8 --window_size [2,2,2]",
-    'LightTS':      "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7",
-    'MICN':         "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7",
-    'SSSS':         "--seg_len 24 --d_model 512 --dropout 0.5 --learning_rate 0.0001 --enc_in 7"
+    'Autoformer':   "--e_layers 2 --d_layers 1 --factor 3 --d_model 512 --d_ff 2048",
+    'iTransformer': "--e_layers 2 --d_model 512 --d_ff 2048 --update_config",
+    'Crossformer':  "--e_layers 2 --d_layers 1 --d_model 256 --d_ff 512 --seg_len 12 --factor 3",
+    'LightTS':      "--e_layers 2 --d_model 128 --d_ff 256 --chunk_size 24",
+    # MICN 修复：label_len 必须为 96 (与 seq_len 一致)
+    'MICN':         "--e_layers 2 --d_layers 1 --factor 3 --d_model 512 --d_ff 2048 --label_len 96",
+    # Pyraformer 修复：移除了错误的括号，增加了必要的参数
+    'Pyraformer':   "--e_layers 2 --d_layers 1 --factor 3 --enc_in 7 --dec_in 7 --c_out 7",
+    # TimeMixer 修复：参考成功脚本，label_len 设为 0，添加下采样参数
+    'TimeMixer':    "--e_layers 2 --d_model 16 --d_ff 32 --label_len 0 --down_sampling_layers 3 --down_sampling_window 2 --down_sampling_method avg",
+    'SSSS':         "--e_layers 2 --d_model 256 --d_ff 512"
+}
+DATA_DIM = {
+    'ETTh1': 7, 'ETTh2': 7, 'ETTm1': 7, 'ETTm2': 7,
+    'Electricity': 321,
+    'Traffic': 862
 }
 MODELS = list(MODEL_ARGS.keys())
 
