@@ -4,7 +4,7 @@
 # 在不同服务器上，修改这个名字！
 # 例如服务器1写: NODE_NAME="Server1"
 # 例如服务器2写: NODE_NAME="Server2"
-NODE_NAME="Server_TimesNet_wea" 
+NODE_NAME="Server_TimesNet_tra4" 
 
 # 日志文件夹
 LOG_DIR="./batch_logs"
@@ -14,7 +14,8 @@ mkdir -p "$LOG_DIR"
 # 1. 定义脚本列表 
 # ⚠️ 注意：Bash数组元素之间用【空格】或者【换行】分隔，千万不要用逗号！
 SCRIPTS=(
-"./scripts/long_term_forecast/Weather_script/TimesNet.sh"
+
+"./scripts/long_term_forecast/Traffic_script/TimesNet4.sh"
 
 
 )
