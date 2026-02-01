@@ -4,7 +4,7 @@
 # 在不同服务器上，修改这个名字！
 # 例如服务器1写: NODE_NAME="Server1"
 # 例如服务器2写: NODE_NAME="Server2"
-NODE_NAME="Server_cro_tra_suply" 
+NODE_NAME="Server_cro_elc_suply" 
 
 # 日志文件夹
 LOG_DIR="./batch_logs"
@@ -14,7 +14,7 @@ mkdir -p "$LOG_DIR"
 # 1. 定义脚本列表 
 # ⚠️ 注意：Bash数组元素之间用【空格】或者【换行】分隔，千万不要用逗号！
 SCRIPTS=(
-"./scripts/long_term_forecast/Traffic_script/Crossformer1.sh"
+"./scripts/long_term_forecast/ECL_script/Crossformer_suply.sh"
 )
 
 SUCCESS_LIST=()
