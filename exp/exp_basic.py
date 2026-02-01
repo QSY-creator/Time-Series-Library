@@ -75,10 +75,24 @@ class Exp_Basic(object):
 
         self.device = self._acquire_device()
         self.model = self._build_model().to(self.device)
+        self._print_model_params()
 
     def _build_model(self):
         raise NotImplementedError
         return None
+
+    def _print_model_params(self):
+        """计算并打印模型参数量"""
+        total_params = sum(p.numel() for p in self.model.parameters())
+        trainable_params = sum(p.numel() for p in self.model.parameters() if p.requires_grad)
+        non_trainable_params = total_params - trainable_params
+        
+        print('=' * 80)
+        print(f'Model: {self.args.model}')
+        print(f'Total Parameters: {total_params:,} ({total_params / 1e6:.2f}M)')
+        print(f'Trainable Parameters: {trainable_params:,} ({trainable_params / 1e6:.2f}M)')
+        print(f'Non-trainable Parameters: {non_trainable_params:,} ({non_trainable_params / 1e6:.2f}M)')
+        print('=' * 80)
 
     def _acquire_device(self):
         if self.args.use_gpu and self.args.gpu_type == 'cuda':
