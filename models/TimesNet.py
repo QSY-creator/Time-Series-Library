@@ -4,7 +4,15 @@ import torch.nn.functional as F
 import torch.fft
 from layers.Embed import DataEmbedding
 from layers.Conv_Blocks import Inception_Block_V1
+import os
+import torch
+import glob
 
+# 自动寻找 torch 的 lib 路径并添加到 LD_LIBRARY_PATH
+torch_lib_path = os.path.join(os.path.dirname(torch.__file__), 'lib')
+if os.path.exists(torch_lib_path):
+    os.environ['LD_LIBRARY_PATH'] = torch_lib_path + os.pathsep + os.environ.get('LD_LIBRARY_PATH', '')
+    print(f"Added {torch_lib_path} to LD_LIBRARY_PATH")
 
 def FFT_for_Period(x, k=2):
     # [B, T, C]
