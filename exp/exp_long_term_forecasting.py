@@ -123,6 +123,9 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                     print(f"参数量 (Params): {params / 1e6:.2f} M (百万)")
                     print(f"计算量 (FLOPs): {flops / 1e9:.2f} G (十亿次)")
                     print("="*40 + "\n")
+                    # 🔪 外科手术刀：一秒强行终止训练！
+                    print("🔪 已拦截！小白大厨不经训练，直接送去厨房测速度！")
+                    return self.model
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
