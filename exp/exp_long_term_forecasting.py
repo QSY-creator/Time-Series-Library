@@ -112,7 +112,17 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                 # decoder input
                 dec_inp = torch.zeros_like(batch_y[:, -self.args.pred_len:, :]).float()
                 dec_inp = torch.cat([batch_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
-
+# ==================== 你的实验探针 ====================
+                # 我们只在第一轮 (epoch==0) 的第一个批次 (i==0) 测算一次，避免重复打印
+                if epoch == 0 and i == 0:
+                    from thop import profile
+                    print("\n" + "="*40)
+                    print(f"正在给模型做体检: {self.args.model}")
+                    # 直接用真实的 4 个输入食材喂进去算成本
+                    flops, params = profile(self.model, inputs=(batch_x, batch_x_mark, dec_inp, batch_y_mark))
+                    print(f"参数量 (Params): {params / 1e6:.2f} M (百万)")
+                    print(f"计算量 (FLOPs): {flops / 1e9:.2f} G (十亿次)")
+                    print("="*40 + "\n")
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
@@ -191,13 +201,27 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                 # decoder input
                 dec_inp = torch.zeros_like(batch_y[:, -self.args.pred_len:, :]).float()
                 dec_inp = torch.cat([batch_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
+                # ==================== 你的延迟秒表 ====================
+                if i == 0: # 我们只在测试集的第一个批次测一次，避免屏幕被刷屏
+                    import time
+                    torch.cuda.synchronize() # 让 GPU 先把之前的杂活干完
+                    start_time = time.time() # 按下秒表！
+                # ======================================================
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():
                         outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
                 else:
                     outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
-
+# ==================== 掐断秒表 ====================
+                if i == 0:
+                    torch.cuda.synchronize() # 死等 GPU 把上面的 outputs 算完
+                    end_time = time.time()   # 再次按下秒表！
+                    latency = (end_time - start_time) * 1000 # 换算成毫秒
+                    print("\n" + "⏱️"*15)
+                    print(f"模型 {self.args.model} 的推理 Latency (延迟): {latency:.2f} ms (毫秒)")
+                    print("⏱️"*15 + "\n")
+                # ==================================================
                 f_dim = -1 if self.args.features == 'MS' else 0
                 outputs = outputs[:, -self.args.pred_len:, :]
                 batch_y = batch_y[:, -self.args.pred_len:, :].to(self.device)
