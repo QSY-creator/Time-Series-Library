@@ -112,20 +112,43 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                 # decoder input
                 dec_inp = torch.zeros_like(batch_y[:, -self.args.pred_len:, :]).float()
                 dec_inp = torch.cat([batch_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
-# ==================== 你的实验探针 ====================
-                # 我们只在第一轮 (epoch==0) 的第一个批次 (i==0) 测算一次，避免重复打印
+# # ==================== 你的实验探针 ====================
+#                 # 我们只在第一轮 (epoch==0) 的第一个批次 (i==0) 测算一次，避免重复打印
+#                 if epoch == 0 and i == 0:
+#                     from thop import profile
+#                     print("\n" + "="*40)
+#                     print(f"正在给模型做体检: {self.args.model}")
+#                     # 直接用真实的 4 个输入食材喂进去算成本
+#                     flops, params = profile(self.model, inputs=(batch_x, batch_x_mark, dec_inp, batch_y_mark))
+#                     print(f"参数量 (Params): {params / 1e6:.2f} M (百万)")
+#                     print(f"计算量 (FLOPs): {flops / 1e9:.2f} G (十亿次)")
+#                     print("="*40 + "\n")
+#                     # 🔪 外科手术刀：一秒强行终止训练！
+#                     print("🔪 已拦截！小白大厨不经训练，直接送去厨房测速度！")
+#                     return self.model
+# ==================== 极限显存探针 ====================
+                # 我们只在第一轮的第一个批次测算一次峰值显存
                 if epoch == 0 and i == 0:
-                    from thop import profile
-                    print("\n" + "="*40)
-                    print(f"正在给模型做体检: {self.args.model}")
-                    # 直接用真实的 4 个输入食材喂进去算成本
-                    flops, params = profile(self.model, inputs=(batch_x, batch_x_mark, dec_inp, batch_y_mark))
-                    print(f"参数量 (Params): {params / 1e6:.2f} M (百万)")
-                    print(f"计算量 (FLOPs): {flops / 1e9:.2f} G (十亿次)")
-                    print("="*40 + "\n")
-                    # 🔪 外科手术刀：一秒强行终止训练！
-                    print("🔪 已拦截！小白大厨不经训练，直接送去厨房测速度！")
-                    return self.model
+                    # 1. 强行做一次前向传播，逼迫模型向 GPU 申请真实显存
+                    if self.args.use_amp:
+                        with torch.cuda.amp.autocast():
+                            outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+                    else:
+                        outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+                    
+                    # 2. 抓取当前 GPU 分配的最大峰值显存 (转换为 GB)
+                    max_mem_gb = torch.cuda.max_memory_allocated() / (1024 ** 3)
+                    
+                    print("\n" + "!"*50)
+                    print(f"🔥 压力测试战报 | 模型: {self.args.model}")
+                    print(f"📏 预测长度 (pred_len): {self.args.pred_len}")
+                    print(f"💾 峰值显存占用: {max_mem_gb:.4f} GB")
+                    print("!"*50 + "\n")
+                    
+                    # 3. 拿到物理证据后，立刻自毁终止程序，不浪费一秒钟！
+                    import sys
+                    sys.exit(0)
+                # ======================================================
                 # encoder - decoder
                 if self.args.use_amp:
                     with torch.cuda.amp.autocast():

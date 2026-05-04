@@ -93,3 +93,75 @@ python -u run.py \
   --d_model 128 \
   --d_ff 128 \
   --itr 1
+
+
+python -u run.py \
+  --task_name long_term_forecast \
+  --is_training 1 \
+  --root_path ./dataset/ETT-small/ \
+  --data_path $data_name.csv \
+  --model_id $data_name'_'96'_'1440 \
+  --model $model_name \
+  --data $data_name \
+  --features M \
+  --seq_len 96 \
+  --label_len 48 \
+  --pred_len 1440 \
+  --e_layers 2 \
+  --d_layers 1 \
+  --factor 3 \
+  --enc_in 7 \
+  --dec_in 7 \
+  --c_out 7 \
+  --des 'Exp' \
+  --d_model 128 \
+  --d_ff 128 \
+  --itr 1
+
+
+python -u run.py \
+  --task_name long_term_forecast \
+  --is_training 1 \
+  --root_path ./dataset/ETT-small/ \
+  --data_path $data_name.csv \
+  --model_id $data_name'_'96'_'2880 \
+  --model $model_name \
+  --data $data_name \
+  --features M \
+  --seq_len 96 \
+  --label_len 48 \
+  --pred_len 2880 \
+  --e_layers 2 \
+  --d_layers 1 \
+  --factor 3 \
+  --enc_in 7 \
+  --dec_in 7 \
+  --c_out 7 \
+  --des 'Exp' \
+  --d_model 128 \
+  --d_ff 128 \
+  --itr 1
+
+
+python -u run.py \
+  --task_name long_term_forecast \
+  --is_training 1 \
+  --root_path ./dataset/ETT-small/ \
+  --data_path $data_name.csv \
+  --model_id $data_name'_'96'_'5760 \
+  --model $model_name \
+  --data $data_name \
+  --features M \
+  --seq_len 96 \
+  --label_len 48 \
+  --pred_len 5760 \
+  --e_layers 2 \
+  --d_layers 1 \
+  --factor 3 \
+  --enc_in 7 \
+  --dec_in 7 \
+  --c_out 7 \
+  --des 'Exp' \
+  --d_model 128 \
+  --d_ff 128 \
+  --itr 1

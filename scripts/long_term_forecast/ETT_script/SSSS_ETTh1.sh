@@ -4,7 +4,7 @@ model_name=SSSS
 data_name=ETTh1
 
 seq_len=96
-for pred_len in 96 192 336 720
+for pred_len in 96 192 336 720 1440 2880 5760
 do
 python -u run.py \
   --task_name long_term_forecast \
