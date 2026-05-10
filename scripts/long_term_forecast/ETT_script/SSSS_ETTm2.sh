@@ -1,6 +1,6 @@
 export CUDA_VISIBLE_DEVICES=0,1,2
 
-data_name=ETTm1
+data_name=ETTm2
 seq_len=96
 
 # 将你需要跑的所有消融实验模型名称放在这个数组里
