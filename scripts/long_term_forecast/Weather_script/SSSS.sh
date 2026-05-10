@@ -6,7 +6,7 @@ seq_len=96
 # 将你需要跑的所有消融实验模型名称放在这个数组里
 models=(
 
-  "SSSS_wopatching"
+
   "SSSS" # 你的基线模型名称
 )
 
