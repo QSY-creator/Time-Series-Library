@@ -282,18 +282,20 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         else:
             dtw = 'Not calculated'
 
-        mae, mse, rmse, mape, mspe = metric(preds, trues)
-        print('mse:{}, mae:{}, dtw:{}'.format(mse, mae, dtw))
+        mae, mse, rmse, mape, mspe, r2 = metric(preds, trues)
+        print('mse:{:.6f}, mae:{:.6f}, mape:{:.4f}%, r2:{:.6f}, dtw:{}'.format(
+            mse, mae, mape * 100, r2, dtw))
         # 修改：在文件名中加入 des 参数，实现物理隔离
         file_name = os.path.join(self.args.output_base, "result_long_term_forecast_{}.txt".format(self.args.des))
         f = open(file_name, 'a')
         f.write(setting + "  \n")
-        f.write('mse:{}, mae:{}, dtw:{}'.format(mse, mae, dtw))
+        f.write('mse:{:.6f}, mae:{:.6f}, rmse:{:.6f}, mape:{:.4f}%, r2:{:.6f}, dtw:{}'.format(
+            mse, mae, rmse, mape * 100, r2, dtw))
         f.write('\n')
         f.write('\n')
         f.close()
 
-        np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe]))
+        np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe, r2]))
         np.save(folder_path + 'pred.npy', preds)
         np.save(folder_path + 'true.npy', trues)
         best_model_path = os.path.join(self.args.checkpoints, setting, 'checkpoint.pth')
