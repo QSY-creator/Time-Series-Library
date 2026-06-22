@@ -185,11 +185,11 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         test_data, test_loader = self._get_data(flag='test')
         if test:
             print('loading model')
-            self.model.load_state_dict(torch.load(os.path.join('./checkpoints/' + setting, 'checkpoint.pth')))
+            self.model.load_state_dict(torch.load(os.path.join(self.args.checkpoints, setting, 'checkpoint.pth')))
 
         preds = []
         trues = []
-        folder_path = './test_results/' + setting + '/'
+        folder_path = os.path.join(self.args.output_base, 'test_results', setting) + '/'
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
@@ -263,11 +263,11 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         print('test shape:', preds.shape, trues.shape)
 
         # result save
-        folder_path = './results/' + setting + '/'
+        folder_path = os.path.join(self.args.output_base, 'results', setting) + '/'
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)
 
-        # dtw calculation
+        # dtw calculation——
         if self.args.use_dtw:
             dtw_list = []
             manhattan_distance = lambda x, y: np.abs(x - y)
@@ -285,7 +285,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         mae, mse, rmse, mape, mspe = metric(preds, trues)
         print('mse:{}, mae:{}, dtw:{}'.format(mse, mae, dtw))
         # 修改：在文件名中加入 des 参数，实现物理隔离
-        file_name = "result_long_term_forecast_{}.txt".format(self.args.des)
+        file_name = os.path.join(self.args.output_base, "result_long_term_forecast_{}.txt".format(self.args.des))
         f = open(file_name, 'a')
         f.write(setting + "  \n")
         f.write('mse:{}, mae:{}, dtw:{}'.format(mse, mae, dtw))
