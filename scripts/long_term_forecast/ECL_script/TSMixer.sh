@@ -1,4 +1,3 @@
-
 model_name=TSMixer
 
 python -u run.py \
@@ -23,7 +22,8 @@ python -u run.py \
   --d_ff 512 \
   --top_k 5 \
   --des 'Exp' \
-  --itr 1
+  --itr 1 \
+  --output_base ./exp_outputs/ECL_TSMixer/
 
 python -u run.py \
   --task_name long_term_forecast \
@@ -47,7 +47,8 @@ python -u run.py \
   --d_ff 512 \
   --top_k 5 \
   --des 'Exp' \
-  --itr 1
+  --itr 1 \
+  --output_base ./exp_outputs/ECL_TSMixer/
 
 python -u run.py \
   --task_name long_term_forecast \
@@ -71,7 +72,8 @@ python -u run.py \
   --d_ff 512 \
   --top_k 5 \
   --des 'Exp' \
-  --itr 1
+  --itr 1 \
+  --output_base ./exp_outputs/ECL_TSMixer/
 
 python -u run.py \
   --task_name long_term_forecast \
@@ -95,4 +97,5 @@ python -u run.py \
   --d_ff 512 \
   --top_k 5 \
   --des 'Exp' \
-  --itr 1
+  --itr 1 \
+  --output_base ./exp_outputs/ECL_TSMixer/

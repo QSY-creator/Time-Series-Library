@@ -298,17 +298,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe, r2]))
         np.save(folder_path + 'pred.npy', preds)
         np.save(folder_path + 'true.npy', trues)
-        if not self.args.keep_checkpoint:
-            best_model_path = os.path.join(self.args.checkpoints, setting, 'checkpoint.pth')
-            try:
-                if os.path.exists(best_model_path):
-                    os.remove(best_model_path)
-                    print(f"【磁盘保护】已删除模型文件: {best_model_path}")
-            except Exception as e:
-                print(f"删除失败: {e}")
-        else:
-            best_model_path = os.path.join(self.args.checkpoints, setting, 'checkpoint.pth')
-            print(f"【磁盘保护】已保留模型文件: {best_model_path}")
+        # checkpoint is permanently kept
         # ==========================================
 
     

@@ -23,6 +23,5 @@ python -u run.py \
   --learning_rate 0.001 \
   --des 'Exp' \
   --itr 1 \
-  --output_base ./exp_outputs/ECL_SSSS/ \
-  --keep_checkpoint
+  --output_base ./exp_outputs/ECL_SSSS/
 done

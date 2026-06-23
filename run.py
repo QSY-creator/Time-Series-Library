@@ -39,7 +39,6 @@ if __name__ == '__main__':
                         help='freq for time features encoding, options:[s:secondly, t:minutely, h:hourly, d:daily, b:business days, w:weekly, m:monthly], you can also use more detailed freq like 15min or 3h')
     parser.add_argument('--checkpoints', type=str, default='./checkpoints/', help='location of model checkpoints')
     parser.add_argument('--output_base', type=str, default='./', help='base path for all outputs (checkpoints, results, test_results, summary txt)')
-    parser.add_argument('--keep_checkpoint', action='store_true', help='keep model checkpoint after test (default: delete)', default=False)
 
     # forecasting task
     parser.add_argument('--seq_len', type=int, default=96, help='input sequence length')

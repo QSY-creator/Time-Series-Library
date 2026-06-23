@@ -21,7 +21,8 @@ python -u run.py \
   --dec_in 321 \
   --c_out 321 \
   --des 'Exp' \
-  --itr 1
+  --itr 1 \
+  --output_base ./exp_outputs/ECL_Pyraformer/
 
 python -u run.py \
   --task_name long_term_forecast \
@@ -42,7 +43,8 @@ python -u run.py \
   --dec_in 321 \
   --c_out 321 \
   --des 'Exp' \
-  --itr 1
+  --itr 1 \
+  --output_base ./exp_outputs/ECL_Pyraformer/
 
 python -u run.py \
   --task_name long_term_forecast \
@@ -63,7 +65,8 @@ python -u run.py \
   --dec_in 321 \
   --c_out 321 \
   --des 'Exp' \
-  --itr 1
+  --itr 1 \
+  --output_base ./exp_outputs/ECL_Pyraformer/
 
 python -u run.py \
   --task_name long_term_forecast \
@@ -84,4 +87,5 @@ python -u run.py \
   --dec_in 321 \
   --c_out 321 \
   --des 'Exp' \
-  --itr 1
+  --itr 1 \
+  --output_base ./exp_outputs/ECL_Pyraformer/
