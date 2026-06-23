@@ -1,7 +1,7 @@
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
 from utils.tools import EarlyStopping, adjust_learning_rate, visual
-from utils.metrics import metric, MAPE, MSPE
+from utils.metrics import metric, SMAPE
 import torch
 import torch.nn as nn
 from torch import optim
@@ -284,7 +284,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
 
         mae, mse, rmse, _, _, r2 = metric(preds, trues)
 
-        # MAPE/MSPE 在原始尺度上计算（反归一化），避免标准化后分母接近0导致爆炸
+        # SMAPE 在原始尺度上计算（反归一化），避免 MAPE 因 true=0 而爆炸
         # 注意：如果 self.args.inverse=True，循环内已经反归一化过，不能再做一次
         if test_data.scale and not self.args.inverse:
             preds_raw = test_data.inverse_transform(preds.reshape(-1, preds.shape[-1])).reshape(preds.shape)
@@ -292,28 +292,22 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         else:
             preds_raw, trues_raw = preds, trues
 
-        from utils.metrics import _mask_near_zero
-        mape = MAPE(preds_raw, trues_raw)
-        mspe = MSPE(preds_raw, trues_raw)
+        smape = SMAPE(preds_raw, trues_raw)
 
-        # 打印被 MAPE mask 掉的近零样本比例，便于排查
-        mask = _mask_near_zero(trues_raw)
-        mask_ratio = 1.0 - mask.mean()
-        print('MAPE masked near-zero ratio: {:.4f}%'.format(mask_ratio * 100))
-
-        print('mse:{:.6f}, mae:{:.6f}, mape:{:.4f}%, r2:{:.6f}, dtw:{}'.format(
-            mse, mae, mape * 100, r2, dtw))
+        print('mse:{:.6f}, mae:{:.6f}, smape:{:.4f}%, r2:{:.6f}, dtw:{}'.format(
+            mse, mae, smape * 100, r2, dtw))
         # 修改：在文件名中加入 des 参数，实现物理隔离
-        file_name = os.path.join(self.args.output_base, "result_long_term_forecast_{}.txt".format(self.args.des))
+        file_name = os.path.join(self.args.output_base, 'result_long_term_forecast_{}.txt'.format(self.args.des))
         f = open(file_name, 'a')
         f.write(setting + "  \n")
-        f.write('mse:{:.6f}, mae:{:.6f}, rmse:{:.6f}, mape:{:.4f}%, r2:{:.6f}, dtw:{}'.format(
-            mse, mae, rmse, mape * 100, r2, dtw))
+        f.write('mse:{:.6f}, mae:{:.6f}, rmse:{:.6f}, smape:{:.4f}%, r2:{:.6f}, dtw:{}'.format(
+            mse, mae, rmse, smape * 100, r2, dtw))
         f.write('\n')
         f.write('\n')
         f.close()
 
-        np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe, r2]))
+        # metrics.npy 第 4 个元素原名为 MAPE，现存放 SMAPE，保持数组形状不变
+        np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, smape, 0.0, r2]))
         np.save(folder_path + 'pred.npy', preds)
         np.save(folder_path + 'true.npy', trues)
         # checkpoint is permanently kept

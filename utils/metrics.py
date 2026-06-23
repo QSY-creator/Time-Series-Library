@@ -53,6 +53,19 @@ def MSPE(pred, true, zero_mask_ratio=0.01):
     return np.mean(np.square((true[mask] - pred[mask]) / abs_true))
 
 
+def SMAPE(pred, true):
+    """Symmetric Mean Absolute Percentage Error.
+
+    对 true=0 不敏感，适合 electricity 这类含大量近零值的多变量序列。
+    """
+    denominator = (np.abs(pred) + np.abs(true)) / 2.0
+    # denominator 为 0 只有当 pred 和 true 同时为 0，此时误差定义为 0
+    mask = denominator > 0
+    if not np.any(mask):
+        return float('nan')
+    return np.mean(np.abs(pred[mask] - true[mask]) / denominator[mask])
+
+
 def R2(pred, true):
     ss_res = np.sum((true - pred) ** 2)
     ss_tot = np.sum((true - true.mean()) ** 2)
