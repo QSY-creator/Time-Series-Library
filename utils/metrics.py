@@ -24,14 +24,17 @@ def RMSE(pred, true):
 
 
 def MAPE(pred, true):
-    epsilon = 1e-8  # 防止除零
-    denominator = np.clip(np.abs(true), epsilon, None)
+    # 使用相对阈值：避免原始尺度上 true 接近 0 时单个样本把 MAPE 撑到几百万
+    abs_true = np.abs(true)
+    epsilon = 1e-8 * np.mean(abs_true) if np.mean(abs_true) > 0 else 1e-8
+    denominator = np.clip(abs_true, epsilon, None)
     return np.mean(np.abs((true - pred) / denominator))
 
 
 def MSPE(pred, true):
-    epsilon = 1e-8  # 防止除零
-    denominator = np.clip(np.abs(true), epsilon, None)
+    abs_true = np.abs(true)
+    epsilon = 1e-8 * np.mean(abs_true) if np.mean(abs_true) > 0 else 1e-8
+    denominator = np.clip(abs_true, epsilon, None)
     return np.mean(np.square((true - pred) / denominator))
 
 

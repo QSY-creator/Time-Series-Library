@@ -285,14 +285,15 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         mae, mse, rmse, _, _, r2 = metric(preds, trues)
 
         # MAPE/MSPE 在原始尺度上计算（反归一化），避免标准化后分母接近0导致爆炸
-        if test_data.scale:
+        # 注意：如果 self.args.inverse=True，循环内已经反归一化过，不能再做一次
+        if test_data.scale and not self.args.inverse:
             preds_raw = test_data.inverse_transform(preds.reshape(-1, preds.shape[-1])).reshape(preds.shape)
             trues_raw = test_data.inverse_transform(trues.reshape(-1, trues.shape[-1])).reshape(trues.shape)
-            mape = MAPE(preds_raw, trues_raw)
-            mspe = MSPE(preds_raw, trues_raw)
         else:
-            mape = MAPE(preds, trues)
-            mspe = MSPE(preds, trues)
+            preds_raw, trues_raw = preds, trues
+
+        mape = MAPE(preds_raw, trues_raw)
+        mspe = MSPE(preds_raw, trues_raw)
 
         print('mse:{:.6f}, mae:{:.6f}, mape:{:.4f}%, r2:{:.6f}, dtw:{}'.format(
             mse, mae, mape * 100, r2, dtw))
