@@ -1,7 +1,7 @@
 from data_provider.data_factory import data_provider
 from exp.exp_basic import Exp_Basic
 from utils.tools import EarlyStopping, adjust_learning_rate, visual
-from utils.metrics import metric
+from utils.metrics import metric, MAPE, MSPE
 import torch
 import torch.nn as nn
 from torch import optim
@@ -282,7 +282,18 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         else:
             dtw = 'Not calculated'
 
-        mae, mse, rmse, mape, mspe, r2 = metric(preds, trues)
+        mae, mse, rmse, _, _, r2 = metric(preds, trues)
+
+        # MAPE/MSPE 在原始尺度上计算（反归一化），避免标准化后分母接近0导致爆炸
+        if test_data.scale:
+            preds_raw = test_data.inverse_transform(preds.reshape(-1, preds.shape[-1])).reshape(preds.shape)
+            trues_raw = test_data.inverse_transform(trues.reshape(-1, trues.shape[-1])).reshape(trues.shape)
+            mape = MAPE(preds_raw, trues_raw)
+            mspe = MSPE(preds_raw, trues_raw)
+        else:
+            mape = MAPE(preds, trues)
+            mspe = MSPE(preds, trues)
+
         print('mse:{:.6f}, mae:{:.6f}, mape:{:.4f}%, r2:{:.6f}, dtw:{}'.format(
             mse, mae, mape * 100, r2, dtw))
         # 修改：在文件名中加入 des 参数，实现物理隔离
