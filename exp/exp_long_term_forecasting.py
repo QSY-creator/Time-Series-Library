@@ -292,8 +292,14 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         else:
             preds_raw, trues_raw = preds, trues
 
+        from utils.metrics import _mask_near_zero
         mape = MAPE(preds_raw, trues_raw)
         mspe = MSPE(preds_raw, trues_raw)
+
+        # 打印被 MAPE mask 掉的近零样本比例，便于排查
+        mask = _mask_near_zero(trues_raw)
+        mask_ratio = 1.0 - mask.mean()
+        print('MAPE masked near-zero ratio: {:.4f}%'.format(mask_ratio * 100))
 
         print('mse:{:.6f}, mae:{:.6f}, mape:{:.4f}%, r2:{:.6f}, dtw:{}'.format(
             mse, mae, mape * 100, r2, dtw))

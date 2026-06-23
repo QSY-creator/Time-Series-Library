@@ -23,19 +23,34 @@ def RMSE(pred, true):
     return np.sqrt(MSE(pred, true))
 
 
-def MAPE(pred, true):
-    # 使用相对阈值：避免原始尺度上 true 接近 0 时单个样本把 MAPE 撑到几百万
+def _mask_near_zero(true, ratio=0.01):
+    """生成 mask：保留 |true| 大于列均值 ratio 倍的样本。
+
+    对多变量序列（最后一维为变量/channel），每列独立计算阈值，
+    避免尺度差异大的列互相影响。主要用于 electricity 这类含 0 的数据集。
+    """
     abs_true = np.abs(true)
-    epsilon = 1e-8 * np.mean(abs_true) if np.mean(abs_true) > 0 else 1e-8
-    denominator = np.clip(abs_true, epsilon, None)
-    return np.mean(np.abs((true - pred) / denominator))
+    # 对除最后一维外的所有维度求均值，得到每列的 mean(|true|)
+    reduce_axes = tuple(range(abs_true.ndim - 1))
+    col_mean = np.mean(abs_true, axis=reduce_axes, keepdims=True)
+    threshold = ratio * col_mean
+    return abs_true > threshold
 
 
-def MSPE(pred, true):
-    abs_true = np.abs(true)
-    epsilon = 1e-8 * np.mean(abs_true) if np.mean(abs_true) > 0 else 1e-8
-    denominator = np.clip(abs_true, epsilon, None)
-    return np.mean(np.square((true - pred) / denominator))
+def MAPE(pred, true, zero_mask_ratio=0.01):
+    mask = _mask_near_zero(true, ratio=zero_mask_ratio)
+    if not np.any(mask):
+        return float('nan')
+    abs_true = np.abs(true[mask])
+    return np.mean(np.abs((true[mask] - pred[mask]) / abs_true))
+
+
+def MSPE(pred, true, zero_mask_ratio=0.01):
+    mask = _mask_near_zero(true, ratio=zero_mask_ratio)
+    if not np.any(mask):
+        return float('nan')
+    abs_true = np.abs(true[mask])
+    return np.mean(np.square((true[mask] - pred[mask]) / abs_true))
 
 
 def R2(pred, true):
