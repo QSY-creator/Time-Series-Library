@@ -1,4 +1,4 @@
-   export CUDA_VISIBLE_DEVICES=0,1,2
+export CUDA_VISIBLE_DEVICES=0,1,2
 
 model_name=SSSS
 
@@ -7,15 +7,16 @@ for pred_len in 96 192 336 720
 do
 python -u run.py \
   --task_name long_term_forecast \
-  --is_training 1 \
+  --is_training 0 \
   --root_path ./dataset/electricity/ \
   --data_path electricity.csv \
-  --model_id ECL_$seq_len'_'$pred_len \
+  --model_id ECL_${seq_len}_${pred_len} \
   --model $model_name \
   --data custom \
-  --features M \
-  --seq_len $seq_len \
-  --pred_len $pred_len \
+  --features MS \
+  --target OT \
+  --seq_len ${seq_len} \
+  --pred_len ${pred_len} \
   --seg_len 24 \
   --enc_in 321 \
   --d_model 512 \
@@ -23,5 +24,5 @@ python -u run.py \
   --learning_rate 0.001 \
   --des 'Exp' \
   --itr 1 \
-  --output_base ./exp_outputs/ECL_SSSS/
+  --output_base ./exp_outputs/ECL_SSSS_MS_OT/
 done

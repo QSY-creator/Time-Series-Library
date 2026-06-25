@@ -1,0 +1,12 @@
+traditional_ml_forecast_ECL_96_96_TraditionalML_ftS_sl96_ll48_pl96_Exp_0  
+mse:0.567580, mae:0.579617, rmse:0.753379, smape:9.5115%, r2:0.459129, dtw:Not calculated
+
+traditional_ml_forecast_ECL_96_192_TraditionalML_ftS_sl96_ll48_pl192_Exp_0  
+mse:0.578979, mae:0.589996, rmse:0.760906, smape:9.6450%, r2:0.450104, dtw:Not calculated
+
+traditional_ml_forecast_ECL_96_336_TraditionalML_ftS_sl96_ll48_pl336_Exp_0  
+mse:0.596850, mae:0.599558, rmse:0.772561, smape:9.7739%, r2:0.435190, dtw:Not calculated
+
+traditional_ml_forecast_ECL_96_720_TraditionalML_ftS_sl96_ll48_pl720_Exp_0  
+mse:0.619757, mae:0.608063, rmse:0.787246, smape:9.8863%, r2:0.408647, dtw:Not calculated
+

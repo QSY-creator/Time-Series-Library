@@ -30,7 +30,10 @@ import os
 import pathlib
 import sys
 from urllib import request
-from huggingface_hub import hf_hub_download
+try:
+    from huggingface_hub import hf_hub_download
+except ImportError:
+    hf_hub_download = None
 
 HUGGINGFACE_REPO = "thuml/Time-Series-Library"
 

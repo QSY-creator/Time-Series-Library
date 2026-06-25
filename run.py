@@ -8,6 +8,7 @@ from exp.exp_short_term_forecasting import Exp_Short_Term_Forecast
 from exp.exp_anomaly_detection import Exp_Anomaly_Detection
 from exp.exp_classification import Exp_Classification
 from exp.exp_zero_shot_forecasting import Exp_Zero_Shot_Forecast
+from exp.exp_traditional_ml_forecasting import Exp_Traditional_ML_Forecast
 from utils.print_args import print_args
 import random
 import numpy as np
@@ -139,6 +140,15 @@ if __name__ == '__main__':
                         help="Discrimitive shapeDTW warp preset augmentation")
     parser.add_argument('--extra_tag', type=str, default="", help="Anything extra")
 
+    # Traditional ML models
+    parser.add_argument('--ml_model', type=str, default='Ridge',
+                        help='sklearn model for traditional_ml_forecast, options: [LinearRegression, Ridge, Lasso, RandomForest, GradientBoosting, XGBoost]')
+    parser.add_argument('--ml_alpha', type=float, default=1.0, help='alpha for Ridge/Lasso')
+    parser.add_argument('--ml_n_estimators', type=int, default=100, help='n_estimators for RandomForest/GradientBoosting/XGBoost')
+    parser.add_argument('--ml_max_depth', type=int, default=5, help='max_depth for RandomForest/XGBoost')
+    parser.add_argument('--ml_subsample', type=float, default=1.0, help='subsample for XGBoost')
+    parser.add_argument('--ml_colsample_bytree', type=float, default=1.0, help='colsample_bytree for XGBoost')
+
     # TimeXer
     parser.add_argument('--patch_len', type=int, default=16, help='patch length')
 
@@ -193,6 +203,8 @@ if __name__ == '__main__':
         Exp = Exp_Classification
     elif args.task_name == 'zero_shot_forecast':
         Exp = Exp_Zero_Shot_Forecast
+    elif args.task_name == 'traditional_ml_forecast':
+        Exp = Exp_Traditional_ML_Forecast
     else:
         Exp = Exp_Long_Term_Forecast
 
@@ -200,26 +212,38 @@ if __name__ == '__main__':
         for ii in range(args.itr):
             # setting record of experiments
             exp = Exp(args)  # set experiments
-            setting = '{}_{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_expand{}_dc{}_fc{}_eb{}_dt{}_{}_{}'.format(
-                args.task_name,
-                args.model_id,
-                args.model,
-                args.data,
-                args.features,
-                args.seq_len,
-                args.label_len,
-                args.pred_len,
-                args.d_model,
-                args.n_heads,
-                args.e_layers,
-                args.d_layers,
-                args.d_ff,
-                args.expand,
-                args.d_conv,
-                args.factor,
-                args.embed,
-                args.distil,
-                args.des, ii)
+            if args.task_name == 'traditional_ml_forecast':
+                # 传统 ML 模型不需要记录 d_model/n_heads 等深度模型参数，缩短 setting 避免 Windows 路径过长
+                setting = '{}_{}_{}_ft{}_sl{}_ll{}_pl{}_{}_{}'.format(
+                    args.task_name,
+                    args.model_id,
+                    args.model,
+                    args.features,
+                    args.seq_len,
+                    args.label_len,
+                    args.pred_len,
+                    args.des, ii)
+            else:
+                setting = '{}_{}_{}_{}_ft{}_sl{}_ll{}_pl{}_dm{}_nh{}_el{}_dl{}_df{}_expand{}_dc{}_fc{}_eb{}_dt{}_{}_{}'.format(
+                    args.task_name,
+                    args.model_id,
+                    args.model,
+                    args.data,
+                    args.features,
+                    args.seq_len,
+                    args.label_len,
+                    args.pred_len,
+                    args.d_model,
+                    args.n_heads,
+                    args.e_layers,
+                    args.d_layers,
+                    args.d_ff,
+                    args.expand,
+                    args.d_conv,
+                    args.factor,
+                    args.embed,
+                    args.distil,
+                    args.des, ii)
 
             print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
             exp.train(setting)
