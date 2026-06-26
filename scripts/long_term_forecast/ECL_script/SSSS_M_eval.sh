@@ -3,7 +3,7 @@ export CUDA_VISIBLE_DEVICES=0
 model_name=SSSS
 
 seq_len=96
-for pred_len in 96 192 336 720
+for pred_len in 720
 do
 python -u run.py \
   --task_name long_term_forecast \
