@@ -22,7 +22,7 @@ python -u run.py \
   --enc_in 321 \
   --dec_in 321 \
   --c_out 321 \
-  --des 'M_eval' \
+  --des 'Exp' \
   --itr 1 \
   --output_base ./exp_outputs/ECL_DLinear/
 done

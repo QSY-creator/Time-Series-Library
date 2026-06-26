@@ -25,7 +25,7 @@ python -u run.py \
   --d_model 256 \
   --d_ff 512 \
   --top_k 5 \
-  --des 'M_eval' \
+  --des 'Exp' \
   --itr 1 \
   --output_base ./exp_outputs/ECL_TSMixer/
 done

@@ -21,7 +21,7 @@ python -u run.py \
   --d_model 512 \
   --dropout 0 \
   --learning_rate 0.001 \
-  --des 'M_eval' \
+  --des 'Exp' \
   --itr 1 \
   --output_base ./exp_outputs/ECL_SSSS/
 done
