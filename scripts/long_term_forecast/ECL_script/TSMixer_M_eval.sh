@@ -4,7 +4,7 @@ model_name=TSMixer
 
 for pred_len in 96 192 336 720
 do
-python -u run.py \
+D:/Anaconda/envs/duet/python.exe -u run.py \
   --task_name long_term_forecast \
   --is_training 0 \
   --root_path ./dataset/electricity/ \
