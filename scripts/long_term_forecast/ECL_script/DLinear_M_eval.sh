@@ -2,7 +2,7 @@ export CUDA_VISIBLE_DEVICES=0
 
 model_name=DLinear
 
-for pred_len in 96 192 336 720
+for pred_len in 720
 do
 python -u run.py \
   --task_name long_term_forecast \
